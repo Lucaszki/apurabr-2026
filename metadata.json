@@ -1,0 +1,6 @@
+{
+  "name": "Painel de Apuração de Eleições em Tempo Real",
+  "description": "Painel editorial de apuração de resultados de eleições em tempo real com estatísticas de urnas, candidatos ordenados e acompanhamento de votos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
