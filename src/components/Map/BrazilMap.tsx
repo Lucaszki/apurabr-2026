@@ -302,6 +302,30 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
     setIsDragging(false);
   };
 
+  // Suporte a gestos touch para smartphones e tablets
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      dragStartRef.current = {
+        x: e.touches[0].clientX - panOffset.x,
+        y: e.touches[0].clientY - panOffset.y,
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDragging && e.touches.length === 1) {
+      setPanOffset({
+        x: e.touches[0].clientX - dragStartRef.current.x,
+        y: e.touches[0].clientY - dragStartRef.current.y,
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   const handleZoom = (delta: number) => {
     setZoomLevel((prev) => Math.max(0.8, Math.min(4, Number((prev + delta).toFixed(2)))));
   };
@@ -317,11 +341,11 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
   };
 
   return (
-    <div className="relative flex flex-col w-full h-[640px] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl select-none">
+    <div className="relative flex flex-col w-full h-[440px] sm:h-[520px] md:h-[580px] lg:h-[640px] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl select-none">
       {/* 1. Barra Superior Editorial de Controles e Navegação */}
-      <div className="absolute top-3 inset-x-3 z-20 flex items-center justify-between pointer-events-none">
+      <div className="absolute top-2.5 sm:top-3 inset-x-2.5 sm:inset-x-3 z-20 flex items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
         {/* Breadcrumb / Indicador de Navegação */}
-        <div className="flex items-center gap-2 bg-slate-900/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto">
+        <div className="flex items-center gap-1 sm:gap-2 bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto min-w-0 max-w-[65%] sm:max-w-none">
           <button
             type="button"
             onClick={() => {
@@ -329,7 +353,7 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
               onSelectMunicipio(null);
               onSelectMesoId(null);
             }}
-            className={`text-xs font-bold tracking-wide transition-colors ${
+            className={`text-[11px] sm:text-xs font-bold tracking-wide transition-colors shrink-0 ${
               !selectedUf ? 'text-blue-400 font-extrabold' : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -338,14 +362,14 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
 
           {selectedUf && (
             <>
-              <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
+              <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-500 shrink-0" />
               <button
                 type="button"
                 onClick={() => {
                   onSelectMunicipio(null);
                   onSelectMesoId(null);
                 }}
-                className={`text-xs font-bold uppercase transition-colors ${
+                className={`text-[11px] sm:text-xs font-bold uppercase transition-colors truncate max-w-[80px] sm:max-w-none ${
                   !selectedMunicipio && !selectedMesoId
                     ? 'text-blue-400 font-extrabold'
                     : 'text-slate-400 hover:text-white'
@@ -358,8 +382,8 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
 
           {selectedMesoId && ufData && (
             <>
-              <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-xs font-bold text-amber-400">
+              <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-500 shrink-0" />
+              <span className="text-[11px] sm:text-xs font-bold text-amber-400 truncate max-w-[80px] sm:max-w-none">
                 {ufData.mesorregioes[String(selectedMesoId)] || `Região ${selectedMesoId}`}
               </span>
             </>
@@ -367,8 +391,8 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
 
           {selectedMunicipio && (
             <>
-              <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-xs font-bold text-emerald-400 truncate max-w-[150px]">
+              <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-500 shrink-0" />
+              <span className="text-[11px] sm:text-xs font-bold text-emerald-400 truncate max-w-[90px] sm:max-w-[150px]">
                 {selectedMunicipio.n}
               </span>
             </>
@@ -376,14 +400,14 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
         </div>
 
         {/* Controles de Camada e Ferramentas */}
-        <div className="flex items-center gap-2 pointer-events-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto shrink-0">
           {/* Alternador de Mesorregião / Município (quando dentro do estado) */}
           {selectedUf && (
-            <div className="flex bg-slate-900/90 backdrop-blur-md p-1 rounded-xl border border-slate-700/60 shadow-lg text-xs">
+            <div className="flex bg-slate-900/90 backdrop-blur-md p-0.5 sm:p-1 rounded-xl border border-slate-700/60 shadow-lg text-[11px] sm:text-xs">
               <button
                 type="button"
                 onClick={() => setCamadaEstado('municipios')}
-                className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-medium transition-all ${
                   camadaEstado === 'municipios'
                     ? 'bg-blue-600 text-white font-bold shadow-xs'
                     : 'text-slate-400 hover:text-white'
@@ -394,7 +418,7 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
               <button
                 type="button"
                 onClick={() => setCamadaEstado('mesorregioes')}
-                className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-medium transition-all ${
                   camadaEstado === 'mesorregioes'
                     ? 'bg-blue-600 text-white font-bold shadow-xs'
                     : 'text-slate-400 hover:text-white'
@@ -406,30 +430,30 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
           )}
 
           {/* Botões de Zoom */}
-          <div className="flex bg-slate-900/90 backdrop-blur-md p-1 rounded-xl border border-slate-700/60 shadow-lg text-slate-300">
+          <div className="flex bg-slate-900/90 backdrop-blur-md p-0.5 sm:p-1 rounded-xl border border-slate-700/60 shadow-lg text-slate-300">
             <button
               type="button"
               onClick={() => handleZoom(0.3)}
-              className="p-1.5 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-1 sm:p-1.5 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
               title="Aproximar"
             >
-              <ZoomIn className="h-4 w-4" />
+              <ZoomIn className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
             <button
               type="button"
               onClick={() => handleZoom(-0.3)}
-              className="p-1.5 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-1 sm:p-1.5 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
               title="Afastar"
             >
-              <ZoomOut className="h-4 w-4" />
+              <ZoomOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="p-1.5 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-1 sm:p-1.5 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
               title="Redefinir visualização"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           </div>
         </div>
@@ -437,11 +461,15 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
 
       {/* 2. Área SVG do Mapa com Transform para Zoom e Pan */}
       <div
-        className="w-full h-full cursor-grab active:cursor-grabbing relative flex items-center justify-center overflow-hidden"
+        className="w-full h-full cursor-grab active:cursor-grabbing relative flex items-center justify-center overflow-hidden touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
         <svg
           ref={svgRef}
@@ -597,28 +625,28 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
       )}
 
       {/* 4. Barra Inferior com Legenda de Cores dos Candidatos */}
-      <div className="absolute bottom-3 inset-x-3 z-20 flex flex-wrap items-center justify-between gap-2 bg-slate-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-slate-800 shadow-lg text-xs">
-        <div className="flex items-center gap-4 flex-wrap">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+      <div className="absolute bottom-2.5 sm:bottom-3 inset-x-2.5 sm:inset-x-3 z-20 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-slate-800 shadow-lg text-[11px] sm:text-xs">
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+          <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden xs:inline">
             Liderança:
           </span>
 
           {/* Flávio Bolsonaro (PL) */}
-          <div className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded-full bg-blue-700 border border-blue-400/40" />
-            <span className="font-bold text-white">Flávio Bolsonaro</span>
-            <span className="text-[10px] text-blue-400 font-semibold">(PL)</span>
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-blue-700 border border-blue-400/40" />
+            <span className="font-bold text-white text-[11px] sm:text-xs">Flávio</span>
+            <span className="text-[9px] sm:text-[10px] text-blue-400 font-semibold">(PL)</span>
           </div>
 
           {/* Lula (PT) */}
-          <div className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded-full bg-red-600 border border-red-400/40" />
-            <span className="font-bold text-white">Lula</span>
-            <span className="text-[10px] text-red-400 font-semibold">(PT)</span>
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-red-600 border border-red-400/40" />
+            <span className="font-bold text-white text-[11px] sm:text-xs">Lula</span>
+            <span className="text-[9px] sm:text-[10px] text-red-400 font-semibold">(PT)</span>
           </div>
 
           {/* Governadores / Outros Partidos */}
-          <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+          <div className="hidden sm:flex items-center gap-1.5 text-slate-400 text-[11px]">
             <span className="h-2 w-2 rounded-full bg-emerald-600" />
             <span>PSD</span>
             <span className="h-2 w-2 rounded-full bg-amber-600" />
@@ -628,8 +656,8 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
           </div>
         </div>
 
-        <div className="text-[11px] text-slate-400 hidden sm:block">
-          Clique no estado ou cidade para detalhar
+        <div className="text-[10px] sm:text-[11px] text-slate-400 hidden sm:block">
+          Toque no estado ou cidade para detalhar
         </div>
       </div>
     </div>

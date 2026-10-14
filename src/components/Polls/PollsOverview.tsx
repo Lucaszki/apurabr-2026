@@ -55,11 +55,11 @@ export const PollsOverview: React.FC = () => {
             </div>
 
             {/* Alternador de Métrica */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start md:self-auto">
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start md:self-auto flex-wrap sm:flex-nowrap">
               <button
                 type="button"
                 onClick={() => setModoExibicao('validos')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition-all ${
                   modoExibicao === 'validos'
                     ? 'bg-white text-slate-900 shadow-xs font-bold'
                     : 'text-slate-600 hover:text-slate-900'
@@ -70,18 +70,19 @@ export const PollsOverview: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setModoExibicao('totais')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition-all ${
                   modoExibicao === 'totais'
                     ? 'bg-white text-slate-900 shadow-xs font-bold'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Votos Totais (Estimulada)
+                <span className="sm:hidden">Estimulada</span>
+                <span className="hidden sm:inline">Votos Totais (Estimulada)</span>
               </button>
               <button
                 type="button"
                 onClick={() => setModoExibicao('rejeicao')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition-all ${
                   modoExibicao === 'rejeicao'
                     ? 'bg-white text-slate-900 shadow-xs font-bold'
                     : 'text-slate-600 hover:text-slate-900'

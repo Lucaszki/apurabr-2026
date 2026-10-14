@@ -315,16 +315,18 @@ export const RunoffSimulator: React.FC = () => {
 
         {/* Termômetro de 50% + 1 Voto */}
         <div className="mt-6 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span className="text-blue-400 font-bold">
-              Flávio: {formatters.percent(resultadoSimulado.pctFlavio)}
-            </span>
-            <span className="text-white font-semibold">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-1.5 sm:gap-2">
+            <div className="flex items-center justify-between sm:justify-start gap-1">
+              <span className="text-blue-400 font-bold">Flávio Bolsonaro:</span>
+              <span className="text-blue-400 font-extrabold tabular-nums">{formatters.percent(resultadoSimulado.pctFlavio)}</span>
+            </div>
+            <span className="text-slate-300 font-semibold text-center text-[11px] sm:text-xs order-last sm:order-none">
               Maioria Absoluta: 50% (Meta: ~{formatters.number(resultadoSimulado.metaMaioria)} votos)
             </span>
-            <span className="text-red-400 font-bold">
-              Lula: {formatters.percent(resultadoSimulado.pctLula)}
-            </span>
+            <div className="flex items-center justify-between sm:justify-end gap-1">
+              <span className="text-red-400 font-bold">Lula:</span>
+              <span className="text-red-400 font-extrabold tabular-nums">{formatters.percent(resultadoSimulado.pctLula)}</span>
+            </div>
           </div>
 
           <div className="relative h-4 w-full bg-slate-800 rounded-full overflow-hidden flex shadow-inner">

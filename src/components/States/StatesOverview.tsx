@@ -76,12 +76,12 @@ export const StatesOverview: React.FC<StatesOverviewProps> = ({
         </div>
 
         {/* Filtros */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex items-center gap-2 self-start sm:self-auto overflow-x-auto max-w-full no-scrollbar">
+          <div className="flex bg-slate-100 p-0.5 sm:p-1 rounded-xl text-xs font-semibold flex-wrap sm:flex-nowrap">
             <button
               type="button"
               onClick={() => setFiltroSituacao('todos')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition-all ${
                 filtroSituacao === 'todos'
                   ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -92,24 +92,25 @@ export const StatesOverview: React.FC<StatesOverviewProps> = ({
             <button
               type="button"
               onClick={() => setFiltroSituacao('segundo_turno')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition-all ${
                 filtroSituacao === 'segundo_turno'
                   ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              2º Turno (5 UFs)
+              2º Turno (5)
             </button>
             <button
               type="button"
               onClick={() => setFiltroSituacao('eleito_1t')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition-all ${
                 filtroSituacao === 'eleito_1t'
                   ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Eleitos em 1º Turno (22 UFs)
+              <span className="sm:hidden">Eleitos 1º T (22)</span>
+              <span className="hidden sm:inline">Eleitos em 1º Turno (22 UFs)</span>
             </button>
           </div>
         </div>

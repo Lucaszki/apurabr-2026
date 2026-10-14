@@ -51,40 +51,42 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
       {/* Faixa superior principal */}
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8 gap-4">
         {/* Zona 1: Marca editorial e Seletor de Turno */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-black tracking-tight text-slate-900 font-sans">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 font-sans">
               APURAÇÃO <span className="text-blue-600">2026</span>
             </span>
-            <span className="hidden text-slate-300 sm:inline" aria-hidden="true">|</span>
-            <span className="hidden text-[11px] font-extrabold uppercase tracking-wider text-slate-500 sm:inline">
+            <span className="hidden text-slate-300 md:inline" aria-hidden="true">|</span>
+            <span className="hidden text-[11px] font-extrabold uppercase tracking-wider text-slate-500 md:inline">
               TSE OFICIAL
             </span>
           </div>
 
           {/* Seletor de Turno */}
-          <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+          <div className="flex bg-slate-100 p-0.5 sm:p-1 rounded-xl text-xs font-semibold">
             <button
               type="button"
               onClick={() => onSelectTurno(1)}
-              className={`px-3 py-1 rounded-lg transition-all ${
+              className={`px-2 sm:px-3 py-1 rounded-lg transition-all ${
                 turnoAtivo === 1
                   ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              1º Turno (Oficial)
+              <span className="sm:hidden">1º T</span>
+              <span className="hidden sm:inline">1º Turno (Oficial)</span>
             </button>
             <button
               type="button"
               onClick={() => onSelectTurno(2)}
-              className={`px-3 py-1 rounded-lg transition-all ${
+              className={`px-2 sm:px-3 py-1 rounded-lg transition-all ${
                 turnoAtivo === 2
                   ? 'bg-blue-600 text-white shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              2º Turno (25/10)
+              <span className="sm:hidden">2º T</span>
+              <span className="hidden sm:inline">2º Turno (25/10)</span>
             </button>
           </div>
         </div>
@@ -142,26 +144,28 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
       </div>
 
       {/* Faixa inferior de status da totalização */}
-      <div className="border-t border-slate-100 bg-slate-50 px-4 py-1.5 sm:px-6 lg:px-8 text-[11px] text-slate-600 flex items-center justify-between">
-        <div className="flex items-center gap-2 font-medium">
+      <div className="border-t border-slate-100 bg-slate-50 px-3 py-1.5 sm:px-6 lg:px-8 text-[11px] text-slate-600 flex flex-wrap items-center justify-between gap-1 sm:gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 font-medium flex-wrap">
           {turnoAtivo === 1 ? (
             <span className="inline-flex items-center gap-1 font-semibold text-emerald-700">
-              <CheckCircle2 className="h-3 w-3" />
-              1º Turno Consolidado (100% apurado em 04/10/2026)
+              <CheckCircle2 className="h-3 w-3 shrink-0" />
+              <span className="hidden sm:inline">1º Turno Consolidado (100% apurado em 04/10/2026)</span>
+              <span className="sm:hidden">1º Turno 100%</span>
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 font-semibold text-blue-700">
-              <Calendar className="h-3 w-3" />
-              2º Turno Agendado para 25 de Outubro de 2026 (Pesquisas em Andamento)
+              <Calendar className="h-3 w-3 shrink-0" />
+              <span className="hidden sm:inline">2º Turno em 25/10/2026 (Pesquisas em Andamento)</span>
+              <span className="sm:hidden">2º Turno 25/10</span>
             </span>
           )}
           <span aria-hidden="true" className="text-slate-300">·</span>
-          <span>{abrangencia}</span>
+          <span className="truncate max-w-[120px] sm:max-w-none">{abrangencia}</span>
           <span aria-hidden="true" className="text-slate-300">·</span>
           <span className="font-semibold text-slate-800">{cargo}</span>
         </div>
 
-        <div className="text-slate-500 tabular-nums hidden sm:block">
+        <div className="text-slate-500 tabular-nums hidden md:block">
           Última transmissão oficial TSE: <strong>{formatters.dateTime(dataHoraAtualizacao)}</strong>
         </div>
       </div>

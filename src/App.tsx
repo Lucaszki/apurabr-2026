@@ -344,67 +344,67 @@ export default function App() {
       />
 
       {/* 2. Barra de Navegação por Abas Principais */}
-      <nav className="border-b border-slate-200 bg-white sticky top-[69px] z-30">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4 overflow-x-auto py-2 no-scrollbar">
+      <nav className="border-b border-slate-200 bg-white sticky top-[57px] sm:top-[69px] z-30 shadow-2xs">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-2 sm:gap-4 overflow-x-auto py-2 no-scrollbar">
             {/* Lista de Abas */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => setAbaAtiva('mapa')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'mapa'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>Mapa & Apuração</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setAbaAtiva('pesquisas')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'pesquisas'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <TrendingUp className="h-4 w-4" />
+                <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>Pesquisas (2º Turno)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setAbaAtiva('simulador')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'simulador'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Calculator className="h-4 w-4" />
+                <Calculator className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>Simulador 50%+1</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setAbaAtiva('estados')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'estados'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Building2 className="h-4 w-4" />
+                <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>Governos & Senados</span>
               </button>
             </div>
 
-            {/* Seletor de Cargo quando na aba do Mapa */}
+            {/* Seletor de Cargo na barra para telas maiores */}
             {abaAtiva === 'mapa' && (
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold shrink-0">
+              <div className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold shrink-0">
                 <button
                   type="button"
                   onClick={() => setCargoAtivo('pres')}
@@ -462,12 +462,12 @@ export default function App() {
       ) : null}
 
       {/* 4. Conteúdo Principal por Aba */}
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <main className="flex-1 mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
         {/* ABA 1: MAPA INTERATIVO DO BRASIL E DETALHES GEOGRÁFICOS */}
         {abaAtiva === 'mapa' && (
-          <div className="space-y-6">
-            {/* Banner explicativo contextual */}
-            <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-r from-blue-50/70 to-indigo-50/50 p-4 shadow-2xs flex items-center justify-between gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            {/* Banner explicativo contextual com Seletor de Cargo integrado */}
+            <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-r from-blue-50/70 to-indigo-50/50 p-3.5 sm:p-4 shadow-2xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shrink-0 shadow-xs">
                   <MapPin className="h-5 w-5" />
@@ -486,19 +486,58 @@ export default function App() {
                 </div>
               </div>
 
-              {selectedUf && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUf(null);
-                    setSelectedMunicipio(null);
-                    setSelectedMesoId(null);
-                  }}
-                  className="rounded-xl border border-slate-300 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 transition-colors shrink-0 shadow-xs cursor-pointer"
-                >
-                  Voltar ao Brasil
-                </button>
-              )}
+              {/* Controles de Cargo e Voltar */}
+              <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
+                <div className="flex items-center gap-1 bg-white/90 border border-slate-200/80 p-1 rounded-xl text-xs font-semibold shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setCargoAtivo('pres')}
+                    className={`px-2.5 py-1 rounded-lg transition-all ${
+                      cargoAtivo === 'pres'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Presidente
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCargoAtivo('gov')}
+                    className={`px-2.5 py-1 rounded-lg transition-all ${
+                      cargoAtivo === 'gov'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Governador
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCargoAtivo('sen')}
+                    className={`px-2.5 py-1 rounded-lg transition-all ${
+                      cargoAtivo === 'sen'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Senador
+                  </button>
+                </div>
+
+                {selectedUf && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedUf(null);
+                      setSelectedMunicipio(null);
+                      setSelectedMesoId(null);
+                    }}
+                    className="rounded-xl border border-slate-300 bg-white hover:bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700 transition-colors shrink-0 shadow-xs cursor-pointer"
+                  >
+                    Voltar ao Brasil
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Grid Principal: Mapa (8 colunas) + Painel Lateral de Detalhes (4 colunas) */}
