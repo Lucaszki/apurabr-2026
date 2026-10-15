@@ -60,7 +60,7 @@ export const UrnasProgressBar: React.FC<UrnasProgressBarProps> = ({
                   Restam <strong className="font-semibold text-slate-800">{formatters.number(secoesRestantes)}</strong> seções ({formatters.percent(percentRestante)})
                 </span>
                 {percentClamp >= 90 && (
-                  <span className="hidden lg:inline-flex items-center gap-1 text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-[11px] font-medium border border-blue-200">
+                  <span className="hidden lg:inline-flex items-center gap-1 text-amber-800 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-medium border border-amber-200">
                     <AlertCircle className="h-3 w-3" />
                     Reta final
                   </span>
@@ -84,7 +84,7 @@ export const UrnasProgressBar: React.FC<UrnasProgressBarProps> = ({
               className={`h-full transition-all duration-700 ease-out rounded-full ${
                 isFinal 
                   ? 'bg-emerald-600' 
-                  : 'bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600'
+                  : 'bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-700'
               }`}
               style={{ width: `${percentClamp}%` }}
             />

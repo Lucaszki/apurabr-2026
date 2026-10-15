@@ -15,6 +15,7 @@ import {
   NOMES_UFS,
 } from '../../services/electionDatasetService';
 import { formatters } from '../../services/electionApi';
+import { CandidatePhoto } from '../CandidatePhoto';
 import {
   MapPin,
   TrendingUp,
@@ -92,7 +93,7 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-100 text-blue-700">
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 text-slate-800">
                 <MapPin className="h-3.5 w-3.5" />
               </span>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight">
@@ -129,13 +130,18 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
               borderColor: `${lider.cor}30`,
             }}
           >
-            <div className="flex items-center gap-2.5">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-white font-bold shadow-xs"
-                style={{ backgroundColor: lider.cor }}
-              >
-                <Trophy className="h-4 w-4" />
-              </span>
+            <div className="flex items-center gap-3">
+              <CandidatePhoto
+                nome={lider.nome}
+                numero={lider.numero}
+                cargo={cargo}
+                uf={selectedUf}
+                corHex={lider.cor}
+                partido={lider.partido}
+                size="sm"
+                aspectRatio="portrait"
+                showNumberBadge
+              />
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
                   Mais votado na cidade
@@ -188,13 +194,19 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
           {listaCandidatos.map((cand, idx) => (
             <div key={cand.numero} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-slate-400 font-bold tabular-nums text-[11px]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-slate-400 font-bold tabular-nums text-[11px] w-4">
                     {idx + 1}º
                   </span>
-                  <span
-                    className="h-2 w-2 rounded-full shrink-0"
-                    style={{ backgroundColor: cand.cor }}
+                  <CandidatePhoto
+                    nome={cand.nome}
+                    numero={cand.numero}
+                    cargo={cargo}
+                    uf={selectedUf}
+                    corHex={cand.cor}
+                    partido={cand.partido}
+                    size="xs"
+                    aspectRatio="circle"
                   />
                   <span className="font-bold text-slate-800 truncate">{cand.nome}</span>
                   <span className="text-[10px] text-slate-400 font-semibold">
@@ -293,13 +305,18 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
               borderColor: `${lider.cor}30`,
             }}
           >
-            <div className="flex items-center gap-2.5">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-white font-bold shadow-xs"
-                style={{ backgroundColor: lider.cor }}
-              >
-                <Trophy className="h-4 w-4" />
-              </span>
+            <div className="flex items-center gap-3">
+              <CandidatePhoto
+                nome={lider.nome}
+                numero={lider.numero}
+                cargo={cargo}
+                uf={selectedUf}
+                corHex={lider.cor}
+                partido={lider.partido}
+                size="sm"
+                aspectRatio="portrait"
+                showNumberBadge
+              />
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
                   Vencedor na região
@@ -338,7 +355,7 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
           </div>
           <div>
             <span className="text-[10px] uppercase font-bold text-slate-400 block">Cidades</span>
-            <span className="text-xs font-bold text-blue-700 tabular-nums">
+            <span className="text-xs font-bold text-slate-800 tabular-nums">
               {dadosMeso.totalMunicipios}
             </span>
           </div>
@@ -352,13 +369,19 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
           {listaCandidatos.map((cand, idx) => (
             <div key={cand.numero} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-slate-400 font-bold tabular-nums text-[11px]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-slate-400 font-bold tabular-nums text-[11px] w-4">
                     {idx + 1}º
                   </span>
-                  <span
-                    className="h-2 w-2 rounded-full shrink-0"
-                    style={{ backgroundColor: cand.cor }}
+                  <CandidatePhoto
+                    nome={cand.nome}
+                    numero={cand.numero}
+                    cargo={cargo}
+                    uf={selectedUf}
+                    corHex={cand.cor}
+                    partido={cand.partido}
+                    size="xs"
+                    aspectRatio="circle"
                   />
                   <span className="font-bold text-slate-800 truncate">{cand.nome}</span>
                   <span className="text-[10px] text-slate-400 font-semibold">
@@ -393,7 +416,7 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
                 key={m.i}
                 type="button"
                 onClick={() => onSelectMunicipio(m)}
-                className="rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 px-2 py-1 text-[11px] font-medium text-slate-700 transition-colors"
+                className="rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-slate-900 px-2 py-1 text-[11px] font-medium text-slate-700 transition-colors cursor-pointer"
               >
                 {m.n}
               </button>
@@ -417,7 +440,7 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-100 text-blue-700">
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 text-slate-800">
                 <MapPin className="h-3.5 w-3.5" />
               </span>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight">
@@ -451,15 +474,19 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
               borderColor: `${corVencedor}30`,
             }}
           >
-            <div className="flex items-center gap-2.5">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-white font-bold shadow-xs"
-                style={{
-                  backgroundColor: corVencedor,
-                }}
-              >
-                <Trophy className="h-4 w-4" />
-              </span>
+            <div className="flex items-center gap-3">
+              <CandidatePhoto
+                nome={dadosUf.vencedor.nmu}
+                numero={dadosUf.vencedor.n}
+                sq={dadosUf.vencedor.sq}
+                cargo={cargo}
+                uf={selectedUf}
+                corHex={corVencedor}
+                partido={dadosUf.vencedor.sg}
+                size="sm"
+                aspectRatio="portrait"
+                showNumberBadge
+              />
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
                   {cargo === 'pres' ? 'Vencedor no estado' : cargo === 'gov' ? 'Líder para Governador' : 'Líder para Senador'}
@@ -521,13 +548,20 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
               return (
                 <div key={cand.n} className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-slate-400 font-bold tabular-nums text-[11px]">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-slate-400 font-bold tabular-nums text-[11px] w-4">
                         {idx + 1}º
                       </span>
-                      <span
-                        className="h-2 w-2 rounded-full shrink-0"
-                        style={{ backgroundColor: corCand }}
+                      <CandidatePhoto
+                        nome={cand.nmu}
+                        numero={cand.n}
+                        sq={cand.sq}
+                        cargo={cargo}
+                        uf={selectedUf}
+                        corHex={corCand}
+                        partido={cand.sg}
+                        size="xs"
+                        aspectRatio="circle"
                       />
                       <span className="font-bold text-slate-800 truncate">{cand.nmu}</span>
                       <span className="text-[10px] text-slate-400 font-semibold">
@@ -588,7 +622,7 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
       <div>
-        <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider block">
+        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
           Panorama Nacional
         </span>
         <h3 className="text-lg font-bold text-slate-900 tracking-tight">
@@ -603,11 +637,19 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
       <div className="space-y-2">
         {/* 1º Lugar */}
         {liderNacional && (
-          <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-extrabold text-xs shadow-xs">
-                1º
-              </span>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CandidatePhoto
+                nome={liderNacional.nmu}
+                numero={liderNacional.n}
+                sq={liderNacional.sq}
+                cargo="pres"
+                corHex="#1e40af"
+                partido={liderNacional.sg}
+                size="sm"
+                aspectRatio="portrait"
+                showNumberBadge
+              />
               <div>
                 <strong className="text-sm font-bold text-slate-900 block leading-tight">
                   {liderNacional.nmu}{' '}
@@ -619,10 +661,10 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
               </div>
             </div>
             <div className="text-right">
-              <span className="text-xl font-extrabold text-blue-700 tabular-nums block">
+              <span className="text-xl font-extrabold text-slate-900 tabular-nums block">
                 {formatters.percent(liderNacional.p)}
               </span>
-              <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-bold text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded">
                 No 2º Turno
               </span>
             </div>
@@ -631,11 +673,19 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
 
         {/* 2º Lugar */}
         {segundoNacional && (
-          <div className="rounded-xl border border-red-200 bg-red-50/60 p-3 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-xs shadow-xs">
-                2º
-              </span>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CandidatePhoto
+                nome={segundoNacional.nmu}
+                numero={segundoNacional.n}
+                sq={segundoNacional.sq}
+                cargo="pres"
+                corHex="#dc2626"
+                partido={segundoNacional.sg}
+                size="sm"
+                aspectRatio="portrait"
+                showNumberBadge
+              />
               <div>
                 <strong className="text-sm font-bold text-slate-900 block leading-tight">
                   {segundoNacional.nmu}{' '}
@@ -647,10 +697,10 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
               </div>
             </div>
             <div className="text-right">
-              <span className="text-xl font-extrabold text-red-700 tabular-nums block">
+              <span className="text-xl font-extrabold text-slate-900 tabular-nums block">
                 {formatters.percent(segundoNacional.p)}
               </span>
-              <span className="text-[10px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-bold text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded">
                 No 2º Turno
               </span>
             </div>
@@ -674,7 +724,7 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
         </div>
         <div className="bg-slate-50 rounded-xl p-2.5">
           <span className="text-[10px] uppercase font-bold text-slate-400 block">Votos Válidos</span>
-          <span className="font-bold text-blue-700 tabular-nums">
+          <span className="font-bold text-emerald-700 tabular-nums">
             {formatters.number(resumoNacional.pres.tot.vv)} (95,23%)
           </span>
         </div>
@@ -688,7 +738,7 @@ export const GeoDetailCard: React.FC<GeoDetailCardProps> = ({
 
       {/* Dica de Interatividade */}
       <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-3 text-xs text-slate-600 flex items-start gap-2">
-        <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+        <Info className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
         <p className="leading-relaxed text-[11px]">
           Clique em qualquer estado no mapa para ver todas as cidades, ou use a barra de busca para localizar diretamente qualquer município.
         </p>

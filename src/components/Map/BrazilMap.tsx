@@ -354,7 +354,7 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
               onSelectMesoId(null);
             }}
             className={`text-[11px] sm:text-xs font-bold tracking-wide transition-colors shrink-0 ${
-              !selectedUf ? 'text-blue-400 font-extrabold' : 'text-slate-400 hover:text-white'
+              !selectedUf ? 'text-white font-extrabold underline decoration-emerald-500 decoration-2' : 'text-slate-400 hover:text-white'
             }`}
           >
             BRASIL
@@ -371,7 +371,7 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
                 }}
                 className={`text-[11px] sm:text-xs font-bold uppercase transition-colors truncate max-w-[80px] sm:max-w-none ${
                   !selectedMunicipio && !selectedMesoId
-                    ? 'text-blue-400 font-extrabold'
+                    ? 'text-white font-extrabold underline decoration-emerald-500 decoration-2'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -409,7 +409,7 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
                 onClick={() => setCamadaEstado('municipios')}
                 className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-medium transition-all ${
                   camadaEstado === 'municipios'
-                    ? 'bg-blue-600 text-white font-bold shadow-xs'
+                    ? 'bg-white text-slate-900 font-extrabold shadow-xs'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -420,7 +420,7 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
                 onClick={() => setCamadaEstado('mesorregioes')}
                 className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-medium transition-all ${
                   camadaEstado === 'mesorregioes'
-                    ? 'bg-blue-600 text-white font-bold shadow-xs'
+                    ? 'bg-white text-slate-900 font-extrabold shadow-xs'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -587,7 +587,7 @@ export const BrazilMap: React.FC<BrazilMapProps> = ({
         {isLoadingUf && (
           <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center z-10">
             <div className="flex items-center gap-3 bg-slate-900 px-4 py-2.5 rounded-xl border border-slate-700 shadow-xl text-xs text-white">
-              <div className="h-4 w-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+              <div className="h-4 w-4 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
               <span>Carregando municípios de {NOMES_UFS[selectedUf?.toLowerCase() || '']}…</span>
             </div>
           </div>

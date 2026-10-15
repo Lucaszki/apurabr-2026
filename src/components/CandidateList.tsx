@@ -79,7 +79,7 @@ export const CandidateList: React.FC<CandidateListProps> = ({
               placeholder="Buscar candidato ou partido..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+              className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-800"
             />
             {searchTerm && (
               <button
@@ -96,17 +96,17 @@ export const CandidateList: React.FC<CandidateListProps> = ({
 
       {/* Cartão de margem entre os líderes (recurso clássico de cobertura jornalística) */}
       {marginStats && !searchTerm && (
-        <div className="rounded-lg bg-blue-50/70 border border-blue-200/80 p-3 sm:p-3.5 text-xs text-blue-950 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="rounded-xl bg-slate-100 border border-slate-200/90 p-3 sm:p-3.5 text-xs text-slate-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-2xs">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-blue-700 shrink-0" />
+            <TrendingUp className="h-4 w-4 text-emerald-700 shrink-0" />
             <span>
               <strong>Diferença de liderança: </strong>
-              <span className="font-semibold text-blue-800">{marginStats.first.nome}</span> tem{' '}
-              <strong className="font-bold text-blue-900">{formatters.percent(marginStats.diffPct)}</strong> a mais que{' '}
-              <span className="font-semibold text-blue-800">{marginStats.second.nome}</span>
+              <span className="font-semibold text-slate-900">{marginStats.first.nome}</span> tem{' '}
+              <strong className="font-extrabold text-slate-900">{formatters.percent(marginStats.diffPct)}</strong> a mais que{' '}
+              <span className="font-semibold text-slate-900">{marginStats.second.nome}</span>
             </span>
           </div>
-          <div className="text-xs font-semibold tabular-nums text-blue-800 shrink-0">
+          <div className="text-xs font-bold tabular-nums text-slate-700 shrink-0">
             Vantagem de {formatters.number(marginStats.diffVotes)} votos
           </div>
         </div>

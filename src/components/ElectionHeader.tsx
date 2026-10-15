@@ -8,13 +8,13 @@ import React from 'react';
 import {
   RefreshCw,
   Radio,
-  SlidersHorizontal,
   CheckCircle2,
   Search,
   MapPin,
   Calendar,
 } from 'lucide-react';
 import { formatters } from '../services/electionApi';
+import { ThemeSelector } from './ThemeSelector';
 
 interface ElectionHeaderProps {
   titulo: string;
@@ -25,7 +25,6 @@ interface ElectionHeaderProps {
   onRefresh: () => void;
   isAutoRefreshActive: boolean;
   onToggleAutoRefresh: () => void;
-  onOpenApiSettings: () => void;
   onOpenSearch: () => void;
   isFinalizada?: boolean;
   turnoAtivo: number;
@@ -40,7 +39,6 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
   onRefresh,
   isAutoRefreshActive,
   onToggleAutoRefresh,
-  onOpenApiSettings,
   onOpenSearch,
   isFinalizada,
   turnoAtivo,
@@ -54,7 +52,7 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 font-sans">
-              APURAÇÃO <span className="text-blue-600">2026</span>
+              APURAÇÃO <span className="text-slate-800">2026</span>
             </span>
             <span className="hidden text-slate-300 md:inline" aria-hidden="true">|</span>
             <span className="hidden text-[11px] font-extrabold uppercase tracking-wider text-slate-500 md:inline">
@@ -62,14 +60,14 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
             </span>
           </div>
 
-          {/* Seletor de Turno */}
+          {/* Seletor de Turno (Totalmente Imparcial) */}
           <div className="flex bg-slate-100 p-0.5 sm:p-1 rounded-xl text-xs font-semibold">
             <button
               type="button"
               onClick={() => onSelectTurno(1)}
-              className={`px-2 sm:px-3 py-1 rounded-lg transition-all ${
+              className={`px-2 sm:px-3 py-1 rounded-lg transition-all cursor-pointer ${
                 turnoAtivo === 1
-                  ? 'bg-white text-slate-900 shadow-xs font-bold'
+                  ? 'bg-slate-900 text-white shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -79,9 +77,9 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
             <button
               type="button"
               onClick={() => onSelectTurno(2)}
-              className={`px-2 sm:px-3 py-1 rounded-lg transition-all ${
+              className={`px-2 sm:px-3 py-1 rounded-lg transition-all cursor-pointer ${
                 turnoAtivo === 2
-                  ? 'bg-blue-600 text-white shadow-xs font-bold'
+                  ? 'bg-slate-900 text-white shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -114,7 +112,7 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
           <button
             type="button"
             onClick={onOpenSearch}
-            className="md:hidden inline-flex items-center justify-center p-2 text-slate-600 rounded-lg border border-slate-200 bg-white hover:bg-slate-50"
+            className="md:hidden inline-flex items-center justify-center p-2 text-slate-600 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer"
             aria-label="Buscar cidades e estados"
           >
             <Search className="h-4 w-4" />
@@ -130,16 +128,8 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
             <span className="sm:hidden">AO VIVO</span>
           </div>
 
-          {/* Botão de configurações de API */}
-          <button
-            type="button"
-            onClick={onOpenApiSettings}
-            title="Configurar Endpoint da API REST"
-            className="inline-flex items-center justify-center p-2 text-slate-500 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors"
-            aria-label="Configurações da API"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-          </button>
+          {/* Seletor de Tema Saudável e Imparcial */}
+          <ThemeSelector />
         </div>
       </div>
 
@@ -153,8 +143,8 @@ export const ElectionHeader: React.FC<ElectionHeaderProps> = ({
               <span className="sm:hidden">1º Turno 100%</span>
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 font-semibold text-blue-700">
-              <Calendar className="h-3 w-3 shrink-0" />
+            <span className="inline-flex items-center gap-1 font-semibold text-slate-800">
+              <Calendar className="h-3 w-3 shrink-0 text-slate-600" />
               <span className="hidden sm:inline">2º Turno em 25/10/2026 (Pesquisas em Andamento)</span>
               <span className="sm:hidden">2º Turno 25/10</span>
             </span>

@@ -20,7 +20,7 @@ export const ElectionStatsOverview: React.FC<ElectionStatsOverviewProps> = ({ da
       <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <PieChart className="h-4 w-4 text-blue-600" />
+            <PieChart className="h-4 w-4 text-emerald-700" />
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">
               Distribuição dos Votos
             </h3>
@@ -36,7 +36,7 @@ export const ElectionStatsOverview: React.FC<ElectionStatsOverviewProps> = ({ da
             <div
               title={`Votos Válidos: ${formatters.percent(data.votos_validos_pct)}`}
               style={{ width: `${data.votos_validos_pct}%` }}
-              className="bg-blue-600 transition-all duration-500"
+              className="bg-emerald-600 transition-all duration-500"
             />
             <div
               title={`Votos Brancos: ${formatters.percent(data.votos_brancos_pct)}`}
@@ -52,7 +52,7 @@ export const ElectionStatsOverview: React.FC<ElectionStatsOverviewProps> = ({ da
 
           <div className="mt-2 flex flex-wrap items-center justify-between text-[11px] text-slate-500">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-blue-600"></span>
+              <span className="h-2 w-2 rounded-full bg-emerald-600"></span>
               Válidos ({formatters.percent(data.votos_validos_pct)})
             </span>
             <span className="flex items-center gap-1.5">

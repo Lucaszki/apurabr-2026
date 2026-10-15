@@ -11,13 +11,13 @@ import { ElectionHeader } from './components/ElectionHeader';
 import { UrnasProgressBar } from './components/UrnasProgressBar';
 import { CandidateList } from './components/CandidateList';
 import { ElectionStatsOverview } from './components/ElectionStatsOverview';
-import { ApiSettingsModal } from './components/ApiSettingsModal';
 import { BrazilMap } from './components/Map/BrazilMap';
 import { GeoDetailCard } from './components/Map/GeoDetailCard';
 import { PollsOverview } from './components/Polls/PollsOverview';
 import { RunoffSimulator } from './components/Polls/RunoffSimulator';
 import { StatesOverview } from './components/States/StatesOverview';
 import { GlobalSearchModal } from './components/Search/GlobalSearchModal';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { formatters } from './services/electionApi';
 import {
   carregarResumoNacional,
@@ -25,6 +25,7 @@ import {
   getVencedorUf,
   getCandidatosDoCargo,
   getCorCandidato,
+  getFotoCandidato,
   CORES_PARTIDOS,
   NOMES_UFS,
 } from './services/electionDatasetService';
@@ -65,7 +66,6 @@ export default function App() {
 
   // Modais
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Dados carregados do dataset oficial
   const [resumoNacional, setResumoNacional] = useState<ResumoNacionalBrasil | null>(null);
@@ -75,17 +75,10 @@ export default function App() {
   // Hook existente para API REST / Simulação incremental em tempo real (Ao Vivo automático)
   const {
     data: simulatedData,
-    loading: apiLoading,
     isRefreshing,
-    error: apiError,
     isAutoRefreshActive,
     setIsAutoRefreshActive,
     refresh: apiRefresh,
-    setSimulatedUrnasPercent,
-    reset: apiReset,
-    url: apiUrl,
-    changeApiUrl,
-    isRealApiMode,
   } = useElectionData({
     autoRefresh: true,
     refreshIntervalMs: 15000,
@@ -191,6 +184,7 @@ export default function App() {
             votos: c.votosUf,
             porcentagem: Number(c.pctUf.toFixed(2)),
             corHex,
+            fotoUrl: c.fotoUrl || getFotoCandidato({ numero: c.n, sq: c.sq, cargo: cargoAtivo, uf: selectedUf }),
             status,
           };
         })
@@ -214,6 +208,7 @@ export default function App() {
           votos: lider.v,
           porcentagem: Number(lider.p.toFixed(2)),
           corHex,
+          fotoUrl: getFotoCandidato({ numero: lider.n, sq: lider.sq, cargo: 'gov', uf: ufSigla }),
           status: (lider.e || lider.st === 'Eleito' ? 'eleito' : lider.st === '2º turno' ? 'segundo_turno' : 'lider') as Candidate['status'],
         };
       }).sort((a, b) => b.votos - a.votos);
@@ -236,6 +231,7 @@ export default function App() {
           votos: lider.v,
           porcentagem: Number(lider.p.toFixed(2)),
           corHex,
+          fotoUrl: getFotoCandidato({ numero: lider.n, sq: lider.sq, cargo: 'sen', uf: ufSigla }),
           status: (lider.e || lider.st === 'Eleito' ? 'eleito' : 'lider') as Candidate['status'],
         };
       }).sort((a, b) => b.votos - a.votos);
@@ -258,6 +254,7 @@ export default function App() {
             votos: c.v,
             porcentagem: Number(c.p.toFixed(2)),
             corHex,
+            fotoUrl: getFotoCandidato({ numero: c.n, sq: c.sq, cargo: 'pres' }),
             status: 'segundo_turno' as Candidate['status'],
           };
         })
@@ -321,7 +318,8 @@ export default function App() {
   }, [currentUfRanking, selectedUf, cargoAtivo, turnoAtivo, resumoNacional, simulatedData, currentCandidatesList]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased font-sans">
+    <ThemeProvider>
+      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased font-sans">
       {/* 1. Header do Painel com Busca Global e Seletor de Turno */}
       <ElectionHeader
         titulo={resumoNacional?.pres?.cands ? 'Apuração das Eleições 2026' : 'Eleições 2026'}
@@ -332,7 +330,6 @@ export default function App() {
         onRefresh={handleRefresh}
         isAutoRefreshActive={isAutoRefreshActive}
         onToggleAutoRefresh={() => setIsAutoRefreshActive(!isAutoRefreshActive)}
-        onOpenApiSettings={() => setIsSettingsOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
         isFinalizada={isFinalizada}
         turnoAtivo={turnoAtivo}
@@ -354,7 +351,7 @@ export default function App() {
                 onClick={() => setAbaAtiva('mapa')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'mapa'
-                    ? 'bg-blue-600 text-white shadow-xs'
+                    ? 'bg-slate-900 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
@@ -367,10 +364,22 @@ export default function App() {
                 onClick={() => setAbaAtiva('pesquisas')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'pesquisas'
-                    ? 'bg-blue-600 text-white shadow-xs'
+                    ? 'bg-slate-900 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
+                      abaAtiva === 'pesquisas' ? 'bg-white' : 'bg-emerald-400'
+                    } opacity-75`}
+                  />
+                  <span
+                    className={`relative inline-flex rounded-full h-2 w-2 ${
+                      abaAtiva === 'pesquisas' ? 'bg-white' : 'bg-emerald-500'
+                    }`}
+                  />
+                </span>
                 <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>Pesquisas (2º Turno)</span>
               </button>
@@ -380,7 +389,7 @@ export default function App() {
                 onClick={() => setAbaAtiva('simulador')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'simulador'
-                    ? 'bg-blue-600 text-white shadow-xs'
+                    ? 'bg-slate-900 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
@@ -393,7 +402,7 @@ export default function App() {
                 onClick={() => setAbaAtiva('estados')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'estados'
-                    ? 'bg-blue-600 text-white shadow-xs'
+                    ? 'bg-slate-900 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
@@ -467,9 +476,9 @@ export default function App() {
         {abaAtiva === 'mapa' && (
           <div className="space-y-4 sm:space-y-6">
             {/* Banner explicativo contextual com Seletor de Cargo integrado */}
-            <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-r from-blue-50/70 to-indigo-50/50 p-3.5 sm:p-4 shadow-2xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shrink-0 shadow-xs">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white shrink-0 shadow-xs">
                   <MapPin className="h-5 w-5" />
                 </span>
                 <div>
@@ -488,13 +497,13 @@ export default function App() {
 
               {/* Controles de Cargo e Voltar */}
               <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
-                <div className="flex items-center gap-1 bg-white/90 border border-slate-200/80 p-1 rounded-xl text-xs font-semibold shadow-2xs">
+                <div className="flex items-center gap-1 bg-slate-100 border border-slate-200/80 p-1 rounded-xl text-xs font-semibold shadow-2xs">
                   <button
                     type="button"
                     onClick={() => setCargoAtivo('pres')}
-                    className={`px-2.5 py-1 rounded-lg transition-all ${
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       cargoAtivo === 'pres'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        ? 'bg-slate-900 text-white font-bold shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -503,9 +512,9 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setCargoAtivo('gov')}
-                    className={`px-2.5 py-1 rounded-lg transition-all ${
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       cargoAtivo === 'gov'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        ? 'bg-slate-900 text-white font-bold shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -514,9 +523,9 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setCargoAtivo('sen')}
-                    className={`px-2.5 py-1 rounded-lg transition-all ${
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       cargoAtivo === 'sen'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        ? 'bg-slate-900 text-white font-bold shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -582,9 +591,9 @@ export default function App() {
 
                 {/* Card de atalho para pesquisa de 2º turno */}
                 {turnoAtivo === 2 && (
-                  <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 text-xs text-blue-900 space-y-2">
-                    <div className="flex items-center gap-1.5 font-bold">
-                      <TrendingUp className="h-4 w-4 text-blue-600" />
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-800 space-y-2 shadow-2xs">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                      <TrendingUp className="h-4 w-4 text-emerald-600" />
                       <span>Intenção de Voto Consolidada</span>
                     </div>
                     <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -593,7 +602,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setAbaAtiva('pesquisas')}
-                      className="inline-flex items-center gap-1 font-bold text-blue-700 hover:underline"
+                      className="inline-flex items-center gap-1 font-bold text-slate-900 hover:underline cursor-pointer"
                     >
                       <span>Abrir comparativo de institutos</span>
                       <ChevronRight className="h-3 w-3" />
@@ -608,7 +617,7 @@ export default function App() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
                 <div>
                   <h2 className="text-xl font-black tracking-tight text-slate-900 font-sans flex items-center gap-2">
-                    <Users className="h-5 w-5 text-blue-600" />
+                    <Users className="h-5 w-5 text-slate-800" />
                     <span>
                       {selectedUf
                         ? `Classificação para ${cargoAtivo === 'pres' ? 'Presidente' : cargoAtivo === 'gov' ? 'Governador' : 'Senador'} em ${NOMES_UFS[selectedUf.toLowerCase()] || selectedUf.toUpperCase()}`
@@ -640,7 +649,7 @@ export default function App() {
                       setSelectedMunicipio(null);
                       setSelectedMesoId(null);
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-100 transition-colors shadow-2xs cursor-pointer self-start sm:self-auto"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-800 hover:bg-slate-200 transition-colors shadow-2xs cursor-pointer self-start sm:self-auto"
                   >
                     <span>Voltar à classificação de todo o Brasil</span>
                   </button>
@@ -690,7 +699,7 @@ export default function App() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span className="font-black tracking-tight text-slate-800">
-              ELEIÇÕES <span className="text-blue-600">2026</span>
+              ELEIÇÕES <span className="text-slate-800">2026</span>
             </span>
             <span aria-hidden="true">·</span>
             <span>Dados Oficiais: Tribunal Superior Eleitoral (TSE) & Malhas: IBGE</span>
@@ -714,17 +723,7 @@ export default function App() {
         }}
         onSelectMunicipioByIbge={handleSelectMunicipioByIbge}
       />
-
-      {/* 7. Modal de Configuração e Simulação da API */}
-      <ApiSettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        currentUrl={apiUrl}
-        isRealApiMode={isRealApiMode}
-        onSaveUrl={changeApiUrl}
-        onSimulatePercent={setSimulatedUrnasPercent}
-        onResetSimulation={apiReset}
-      />
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }

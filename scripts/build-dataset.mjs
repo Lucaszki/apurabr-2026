@@ -25,10 +25,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const OUT_DATA = path.join(ROOT, 'public', 'data', '2026');
 const OUT_GEO = path.join(ROOT, 'public', 'geo');
+const OUT_FOTOS = path.join(ROOT, 'public', 'fotos');
 
 const args = process.argv.slice(2);
 const TURNO = args.includes('--turno') ? Number(args[args.indexOf('--turno') + 1]) : 1;
 const SKIP_GEO = args.includes('--sem-geo') || TURNO === 2;
+const SKIP_FOTOS = args.includes('--sem-fotos');
 
 const TSE = 'https://resultados.tse.jus.br/oficial';
 const CICLO = 'ele2026';
@@ -409,6 +411,79 @@ async function main() {
     }, 'deputados');
     depIndex.sort((a, b) => b[5] - a[5]);
     await writeJson(path.join(OUT_DATA, 'dep-index.json'), depIndex);
+  }
+
+  // 7) Fotos oficiais dos candidatos
+  if (!SKIP_FOTOS) {
+    console.log('• TSE: fotos dos candidatos…');
+    const fotoTasks = [];
+
+    // Presidência
+    if (presBR && presBR.cands) {
+      const presDir = path.join(OUT_FOTOS, 'pres');
+      await fs.mkdir(presDir, { recursive: true });
+      for (const c of presBR.cands) {
+        if (!c.sq) continue;
+        const fileSq = path.join(presDir, `${c.sq}.jpeg`);
+        const fileNum = path.join(presDir, `${c.n}.jpeg`);
+        fotoTasks.push({
+          url: `${TSE}/${CICLO}/${ELE.federal}/fotos/br/${c.sq}.jpeg`,
+          targets: [fileSq, fileNum],
+        });
+      }
+    }
+
+    // Governos e Senados Estaduais
+    for (const [cargoNome, cargoObj, eleId] of [
+      ['gov', govUF, ELE.estadual],
+      ['sen', senUF, ELE.estadual],
+    ]) {
+      for (const [uf, r] of Object.entries(cargoObj)) {
+        if (!r || !r.cands) continue;
+        const ufDir = path.join(OUT_FOTOS, uf.toLowerCase());
+        await fs.mkdir(ufDir, { recursive: true });
+        for (const c of r.cands) {
+          if (!c.sq) continue;
+          const fileSq = path.join(ufDir, `${c.sq}.jpeg`);
+          const fileNum = path.join(ufDir, `${cargoNome}-${c.n}.jpeg`);
+          fotoTasks.push({
+            url: `${TSE}/${CICLO}/${eleId}/fotos/${uf.toLowerCase()}/${c.sq}.jpeg`,
+            targets: [fileSq, fileNum],
+          });
+        }
+      }
+    }
+
+    // Baixa fotos faltantes com concorrência controlada
+    const fotosParaBaixar = [];
+    for (const t of fotoTasks) {
+      try {
+        await fs.access(t.targets[0]);
+      } catch {
+        fotosParaBaixar.push(t);
+      }
+    }
+
+    if (fotosParaBaixar.length > 0) {
+      await pool(
+        fotosParaBaixar,
+        15,
+        async (t) => {
+          try {
+            const res = await fetch(t.url, { headers: HEADERS });
+            if (res.ok) {
+              const buf = Buffer.from(await res.arrayBuffer());
+              for (const tgt of t.targets) {
+                await fs.writeFile(tgt, buf);
+              }
+            }
+          } catch {}
+        },
+        'fotos TSE'
+      );
+    } else {
+      console.log('  fotos TSE: todas as fotos já sincronizadas.');
+    }
   }
 
   console.log(`\n✔ Concluído em ${((Date.now() - t0) / 1000).toFixed(0)}s → ${path.relative(ROOT, outTurno)}`);

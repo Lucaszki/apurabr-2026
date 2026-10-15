@@ -7,7 +7,8 @@
 import React from 'react';
 import { Candidate } from '../types/election';
 import { formatters } from '../services/electionApi';
-import { Trophy, CheckCircle, ChevronRight, User } from 'lucide-react';
+import { Trophy, CheckCircle, ChevronRight } from 'lucide-react';
+import { CandidatePhoto } from './CandidatePhoto';
 
 interface CandidateCardProps {
   candidate: Candidate;
@@ -40,7 +41,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
       }
       if (candidate.status === 'segundo_turno') {
         return (
-          <span className="inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800">
+          <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-800 border border-slate-300">
             2º Turno
           </span>
         );
@@ -80,13 +81,16 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
     <article
       className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
         isLeader
-          ? 'border-blue-500 bg-white shadow-md ring-2 ring-blue-500/10'
+          ? 'border-slate-300 bg-white shadow-md ring-1 ring-slate-900/10'
           : 'border-slate-200 bg-white hover:border-slate-300 shadow-xs'
       }`}
     >
-      {/* Faixa decorativa sutil na borda superior indicando liderança */}
+      {/* Faixa decorativa sutil na borda superior com a cor oficial do próprio candidato */}
       {isLeader && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500" />
+        <div
+          className="h-1.5 w-full transition-all"
+          style={{ backgroundColor: candidate.corHex }}
+        />
       )}
 
       <div className="p-4 sm:p-5">
@@ -99,7 +103,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
               <span
                 className={`flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold tabular-nums ${
                   isLeader
-                    ? 'bg-blue-600 text-white shadow-xs'
+                    ? 'bg-slate-900 text-white shadow-xs'
                     : isSecond
                     ? 'bg-slate-700 text-white'
                     : 'bg-slate-100 text-slate-600'
@@ -109,34 +113,19 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
               </span>
             </div>
 
-            {/* Silhueta / Placeholder editorial da foto */}
-            <div className="relative shrink-0">
-              <div
-                className={`relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center overflow-hidden rounded-lg border ${
-                  isLeader ? 'border-blue-200 bg-slate-100' : 'border-slate-200 bg-slate-100'
-                }`}
-              >
-                {/* Ícone de silhueta refinado com sombra neutra */}
-                <User 
-                  className={`h-10 w-10 ${
-                    isLeader ? 'text-slate-500' : 'text-slate-400'
-                  }`} 
-                  strokeWidth={1.5}
-                />
-                
-                {/* Badge com o número do candidato */}
-                <span className="absolute bottom-0 inset-x-0 bg-slate-800/90 text-center text-[10px] font-bold text-white tracking-wider py-0.5">
-                  Nº {candidate.numero}
-                </span>
-              </div>
-
-              {/* Ponto de cor da legenda partidária */}
-              <span
-                className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white shadow-xs"
-                style={{ backgroundColor: candidate.corHex }}
-                title={`Legenda: ${candidate.siglaPartido}`}
-              />
-            </div>
+            {/* Foto oficial do candidato estilo TSE / Urna Eletrônica */}
+            <CandidatePhoto
+              fotoUrl={candidate.fotoUrl}
+              nome={candidate.nomeUrna || candidate.nome}
+              numero={candidate.numero}
+              corHex={candidate.corHex}
+              partido={candidate.siglaPartido}
+              size="md"
+              aspectRatio="portrait"
+              showNumberBadge
+              showPartyDot
+              priority={isLeader || isSecond}
+            />
 
             {/* Informações nominais e partidárias */}
             <div className="min-w-0 flex-1">
@@ -172,11 +161,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
             </div>
 
             <div className="flex items-baseline gap-1 sm:text-right">
-              <span
-                className={`text-2xl sm:text-3xl font-extrabold tracking-tight font-sans tabular-nums ${
-                  isLeader ? 'text-blue-700' : 'text-slate-900'
-                }`}
-              >
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight font-sans tabular-nums text-slate-900">
                 {formatters.percent(candidate.porcentagem)}
               </span>
               <span className="text-xs font-semibold text-slate-500">dos votos</span>

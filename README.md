@@ -73,24 +73,26 @@ Nas eleições brasileiras, enquanto a disputa presidencial é unificada, cada u
 
 ```mermaid
 flowchart TD
-    A[Dados Oficiais TSE / IBGE] -->|scripts/build-dataset.mjs| B[(public/data/2026/t1/)]
-    B --> C[br.json - Panorama Brasil & UFs]
-    B --> D[uf/*.json - 27 Arquivos Estaduais]
+    A["Dados Oficiais TSE / IBGE"] -->|scripts/build-dataset.mjs| B[("public/data/2026/t1/")]
+    B --> C["br.json - Panorama Brasil & UFs"]
+    B --> D["uf/*.json - 27 Arquivos Estaduais"]
     
-    C --> E[electionDatasetService.ts]
+    C --> E["electionDatasetService.ts"]
     D --> E
     
-    E --> F[React State & Hooks]
-    F --> G[BrazilMap Component - D3-Geo]
-    F --> H[GeoDetailCard - Detalhes Regionais]
-    F --> I[RunoffSimulator - Simulador 2º Turno]
-    F --> J[OfficialCandidatesList - Apuração & Partidos]
+    E --> F["React State & Custom Hooks"]
+    F --> G["BrazilMap (SVG + D3-Geo)"]
+    F --> H["GeoDetailCard (Detalhes Regionais)"]
+    F --> I["RunoffSimulator (Simulador 2º Turno 50%+1)"]
+    F --> J["CandidateList (Cards com Fotos Reais)"]
+    F --> K["PollsOverview (Radar de Pesquisas Registradas)"]
     
     subgraph UI Layer
         G
         H
         I
         J
+        K
     end
 ```
 
@@ -100,12 +102,12 @@ flowchart TD
 
 | Camada | Tecnologia | Propósito |
 |---|---|---|
-| **Frontend** | React 19 + TypeScript | UI reativa, tipagem estrita de payloads e lifecycle |
-| **Estilização** | Tailwind CSS v4 | Estilização utilitária de alto desempenho sem overhead |
-| **Visualização** | D3-geo + D3-zoom | Cálculos cartográficos, projeções e controle de zoom SVG |
-| **Build Tool** | Vite 8 | Bundler ultra-rápido com HMR e compilação em sub-segundo |
-| **Ícones & Animação** | Lucide React + Motion | Micro-interações, ícones modernos e feedbacks visuais |
-| **Dados** | TSE Dados Abertos + IBGE Malhas | Base fidedigna de votos apurados e geometrias |
+| **Frontend** | React 19 + TypeScript | UI reativa com tipagem estrita de payloads e ciclo de vida |
+| **Estilização & Temas** | Tailwind CSS v4 + ThemeContext | Design cívico neutro com suporte a Tema Claro e Tema Escuro |
+| **Visualização Geoespacial** | D3-geo + D3-zoom | Projeção planar cartográfica e controle de zoom SVG interativo |
+| **Build Tool** | Vite 8 | Bundler de alta performance com compilação ultra-rápida |
+| **Ícones & Micro-interações** | Lucide React + Motion | Ícones semânticos e feedback visual de apuração |
+| **Engenharia de Dados** | Node.js (scripts/build-dataset.mjs) | Pipeline de extração e particionamento dos dados do TSE e IBGE |
 
 ---
 
@@ -115,31 +117,52 @@ flowchart TD
 Eleicao-2026/
 ├── public/
 │   ├── favicon.svg               # Ícone temático da aplicação
+│   ├── fotos/                    # Fotos oficiais dos candidatos cadastradas no TSE
+│   ├── geo/                      # Malhas vetoriais de UFs e municípios (IBGE)
 │   └── data/
 │       └── 2026/t1/
 │           ├── br.json           # Sumário nacional e UFs (Pres, Gov, Sen)
-│           └── uf/               # Dados municipais de cada um dos 27 estados
+│           └── uf/               # Dados municipais particionados dos 27 estados
 ├── scripts/
-│   └── build-dataset.mjs         # Pipeline de extração e formatação dos dados TSE
+│   └── build-dataset.mjs         # Pipeline de extração e normalização dos dados TSE
 ├── src/
 │   ├── components/
 │   │   ├── Map/
-│   │   │   ├── BrazilMap.tsx     # Componente principal do mapa com SVG + D3
+│   │   │   ├── BrazilMap.tsx     # Renderização interativa do mapa com SVG + D3
 │   │   │   └── GeoDetailCard.tsx # Painel lateral com apuração do estado/município
-│   │   ├── ElectionHeader.tsx    # Cabeçalho com status ao vivo e filtros
-│   │   ├── OfficialCandidatesList.tsx # Listagem e classificação de candidatos
-│   │   ├── RunoffSimulator.tsx   # Simulador matemático de 2º turno (50%+1)
-│   │   ├── QuickSearchModal.tsx  # Busca instantânea de candidatos e cidades
-│   │   └── Polls/                # Acompanhamento de pesquisas registradas
+│   │   ├── Polls/
+│   │   │   ├── PollsOverview.tsx # Radar de pesquisas eleitorais registradas
+│   │   │   └── RunoffSimulator.tsx # Simulador matemático de 2º turno (50%+1)
+│   │   ├── Search/
+│   │   │   └── GlobalSearchModal.tsx # Busca rápida por candidato, partido e município
+│   │   ├── States/
+│   │   │   └── StatesOverview.tsx# Tabela comparativa e panorama dos 27 estados
+│   │   ├── CandidateCard.tsx     # Card individual de candidato com métricas
+│   │   ├── CandidateList.tsx     # Listagem classificada com ordenação dinâmica
+│   │   ├── CandidatePhoto.tsx    # Componente com fallback para fotos oficiais
+│   │   ├── ElectionHeader.tsx    # Cabeçalho com status ao vivo e alternador de turnos
+│   │   ├── ElectionStatsOverview.tsx # Métricas de comparecimento, brancos e nulos
+│   │   ├── ThemeSelector.tsx     # Alternador rápido entre Tema Claro e Escuro
+│   │   └── UrnasProgressBar.tsx  # Barra de progresso de totalização das urnas
+│   ├── contexts/
+│   │   └── ThemeContext.tsx      # Gerenciamento de Tema Claro / Escuro via React Context
+│   ├── data/
+│   │   └── pesquisas2026.ts      # Dados estruturados de pesquisas eleitorais registradas
+│   ├── hooks/
+│   │   └── useElectionData.ts    # Hook customizado de polling e sincronização periódica
 │   ├── services/
-│   │   ├── electionDatasetService.ts # Processamento de matrizes de votos e cores
-│   │   └── electionApi.ts        # Polling e controle de sincronização
+│   │   ├── electionDatasetService.ts # Camada de serviço de dados e cache em memória
+│   │   └── electionApi.ts        # Utilitários de normalização e simulação em tempo real
 │   ├── types/
-│   │   └── dataset.ts            # Definições de tipos TypeScript do dataset
-│   ├── App.tsx                   # Ponto de entrada da aplicação
-│   └── main.tsx
+│   │   ├── dataset.ts            # Tipagem TypeScript do dataset nacional e estadual
+│   │   ├── election.ts           # Interfaces de resumo eleitoral e candidatos
+│   │   └── pesquisas.ts          # Tipagem para institutos e cenários de pesquisa
+│   ├── App.tsx                   # Componente raiz e orquestrador de estado
+│   ├── index.css                 # Configuração do Tailwind CSS e tokens de tema
+│   └── main.tsx                  # Ponto de montagem da aplicação React
 ├── index.html                    # Meta tags SEO, OpenGraph e viewport
 ├── package.json
+├── tsconfig.json
 └── vite.config.ts
 ```
 

@@ -8,9 +8,158 @@ import { PesquisaPresidente, PesquisaGovernador, TransferenciaVotoCandidato } fr
 
 /**
  * Pesquisas Nacionais registradas no TSE para Presidente (2º Turno)
- * Levantadas entre 05/10/2026 e 13/10/2026
+ * Atualizadas ativamente com ordenação cronológica decrescente.
  */
 export const PESQUISAS_PRESIDENTE_2T: PesquisaPresidente[] = [
+  {
+    id: 'datafolha-2026-10-14',
+    instituto: 'Datafolha',
+    contratante: 'Folha de S.Paulo / TV Globo',
+    divulgacao: '2026-10-14',
+    campo: '12 a 14 de outubro de 2026',
+    amostra: 3240,
+    margem: 2.0,
+    registroTse: 'BR-09142/2026',
+    cenario: 'estimulada',
+    totais: {
+      flavio: 49.0,
+      lula: 46.0,
+      brancosNulos: 4.0,
+      indecisos: 1.0,
+    },
+    validos: {
+      flavio: 51.5,
+      lula: 48.5,
+    },
+    rejeicao: {
+      flavio: 45.0,
+      lula: 47.0,
+    },
+    regioes: {
+      sudeste: { flavio: 53.5, lula: 46.5 },
+      sul: { flavio: 61.0, lula: 39.0 },
+      nordeste: { flavio: 34.5, lula: 65.5 },
+      centroOeste: { flavio: 60.5, lula: 39.5 },
+      norte: { flavio: 52.0, lula: 48.0 },
+    },
+    destaques: [
+      'Mais recente levantamento do Datafolha divulgado em 14/10',
+      'Flávio mantém liderança numérica com 51,5% dos votos válidos na margem técnica',
+      'Lula avança 1 pp no Sudeste com maior engajamento metropolitano',
+    ],
+    fonteUrl: 'https://g1.globo.com/politica/eleicoes/2026/pesquisa-datafolha-segundo-turno.ghtml',
+  },
+  {
+    id: 'quaest-2026-10-14',
+    instituto: 'Quaest / Genial',
+    contratante: 'Genial Investimentos Corretora de Câmbio e Valores Mobiliários S.A.',
+    divulgacao: '2026-10-14',
+    campo: '11 a 13 de outubro de 2026',
+    amostra: 3000,
+    margem: 2.0,
+    registroTse: 'BR-08734/2026',
+    cenario: 'estimulada',
+    totais: {
+      flavio: 48.0,
+      lula: 46.5,
+      brancosNulos: 4.5,
+      indecisos: 1.0,
+    },
+    validos: {
+      flavio: 50.8,
+      lula: 49.2,
+    },
+    rejeicao: {
+      flavio: 46.0,
+      lula: 46.5,
+    },
+    regioes: {
+      sudeste: { flavio: 52.5, lula: 47.5 },
+      sul: { flavio: 59.5, lula: 40.5 },
+      nordeste: { flavio: 35.5, lula: 64.5 },
+      centroOeste: { flavio: 59.0, lula: 41.0 },
+      norte: { flavio: 51.5, lula: 48.5 },
+    },
+    destaques: [
+      'Empate técnico rigoroso: diferença de apenas 1,6 pp nos votos válidos',
+      'Alta consolidação de voto com 92% dos eleitores se declarando totalmente decididos',
+    ],
+    fonteUrl: 'https://oglobo.globo.com/politica/eleicoes-2026/pesquisa-quaest-segundo-turno-presidente',
+  },
+  {
+    id: 'atlasintel-2026-10-14',
+    instituto: 'AtlasIntel',
+    contratante: 'AtlasIntel / Bloomberg',
+    divulgacao: '2026-10-14',
+    campo: '10 a 13 de outubro de 2026',
+    amostra: 4850,
+    margem: 1.0,
+    registroTse: 'BR-09852/2026',
+    cenario: 'estimulada',
+    totais: {
+      flavio: 50.8,
+      lula: 46.1,
+      brancosNulos: 2.0,
+      indecisos: 1.1,
+    },
+    validos: {
+      flavio: 52.4,
+      lula: 47.6,
+    },
+    rejeicao: {
+      flavio: 46.5,
+      lula: 48.0,
+    },
+    regioes: {
+      sudeste: { flavio: 54.8, lula: 45.2 },
+      sul: { flavio: 63.0, lula: 37.0 },
+      nordeste: { flavio: 33.0, lula: 67.0 },
+      centroOeste: { flavio: 61.5, lula: 38.5 },
+      norte: { flavio: 53.5, lula: 46.5 },
+    },
+    destaques: [
+      'Maior amostra nacional: 4.850 questionários com margem reduzida de 1 pp',
+      'Flávio abre 4,8 pontos percentuais de vantagem sobre Lula em votos válidos',
+    ],
+    fonteUrl: 'https://www.gazetadopovo.com.br/eleicoes/2026/pesquisa-atlasintel-segundo-turno-presidente/',
+  },
+  {
+    id: 'parana-2026-10-14',
+    instituto: 'Paraná Pesquisas',
+    contratante: 'Paraná Pesquisas / Gazeta',
+    divulgacao: '2026-10-14',
+    campo: '10 a 13 de outubro de 2026',
+    amostra: 2800,
+    margem: 2.2,
+    registroTse: 'BR-07521/2026',
+    cenario: 'estimulada',
+    totais: {
+      flavio: 50.1,
+      lula: 45.2,
+      brancosNulos: 3.7,
+      indecisos: 1.0,
+    },
+    validos: {
+      flavio: 52.6,
+      lula: 47.4,
+    },
+    rejeicao: {
+      flavio: 44.8,
+      lula: 47.9,
+    },
+    regioes: {
+      sudeste: { flavio: 54.2, lula: 45.8 },
+      sul: { flavio: 62.5, lula: 37.5 },
+      nordeste: { flavio: 33.8, lula: 66.2 },
+      centroOeste: { flavio: 61.0, lula: 39.0 },
+      norte: { flavio: 53.0, lula: 47.0 },
+    },
+    destaques: [
+      'Flávio atinge 52,6% dos válidos contra 47,4% de Lula',
+      'Vantagem consolidada de 5,2 pp no levantamento da Paraná Pesquisas',
+    ],
+    fonteUrl: 'https://www.paranapesquisas.com.br/eleicoes-2026-segundo-turno',
+  },
   {
     id: 'datafolha-2026-10-08',
     instituto: 'Datafolha',
@@ -389,12 +538,54 @@ export const PESQUISAS_GOVERNADOR_2T: PesquisaGovernador[] = [
 ];
 
 /**
- * Média ponderada agregada das pesquisas nacionais (Tracker Eleitoral)
+ * Retorna as pesquisas de governador ordenadas pela mais recente
  */
-export function calcularMediaAgregada() {
-  const pesquisas = PESQUISAS_PRESIDENTE_2T;
-  if (!pesquisas.length) return null;
+export function getPesquisasGovernadorOrdenadas(
+  pesquisas: PesquisaGovernador[] = PESQUISAS_GOVERNADOR_2T
+): PesquisaGovernador[] {
+  return [...pesquisas].sort((a, b) => {
+    return new Date(b.divulgacao).getTime() - new Date(a.divulgacao).getTime();
+  });
+}
 
+/**
+ * Retorna as pesquisas presidenciais ordenadas ativamente da mais recente para a mais antiga
+ */
+export function getPesquisasOrdenadas(
+  pesquisas: PesquisaPresidente[] = PESQUISAS_PRESIDENTE_2T
+): PesquisaPresidente[] {
+  return [...pesquisas].sort((a, b) => {
+    const dataDiff = new Date(b.divulgacao).getTime() - new Date(a.divulgacao).getTime();
+    if (dataDiff !== 0) return dataDiff;
+    return b.amostra - a.amostra;
+  });
+}
+
+/**
+ * Retorna dinamicamente a pesquisa registrada mais recente de todas
+ */
+export function getPesquisaMaisRecente(
+  pesquisas: PesquisaPresidente[] = PESQUISAS_PRESIDENTE_2T
+): PesquisaPresidente {
+  const ordenadas = getPesquisasOrdenadas(pesquisas);
+  return ordenadas[0];
+}
+
+/**
+ * Média ponderada agregada das pesquisas nacionais (Tracker Eleitoral Dinâmico)
+ * Pondera as pesquisas dando maior peso estatístico às mais recentes (decaimento temporal)
+ * e ao tamanho da amostra amostral.
+ */
+export function calcularMediaAgregada(
+  pesquisasCustom?: PesquisaPresidente[]
+) {
+  const ordenadas = getPesquisasOrdenadas(pesquisasCustom || PESQUISAS_PRESIDENTE_2T);
+  if (!ordenadas.length) return null;
+
+  const maisRecente = ordenadas[0];
+  const refTime = new Date(maisRecente.divulgacao).getTime();
+
+  let somaPesos = 0;
   let somaValidosFlavio = 0;
   let somaValidosLula = 0;
   let somaTotaisFlavio = 0;
@@ -402,18 +593,34 @@ export function calcularMediaAgregada() {
   let somaBn = 0;
   let somaIndecisos = 0;
 
-  pesquisas.forEach((p) => {
-    somaValidosFlavio += p.validos.flavio;
-    somaValidosLula += p.validos.lula;
-    somaTotaisFlavio += p.totais.flavio;
-    somaTotaisLula += p.totais.lula;
-    somaBn += p.totais.brancosNulos;
-    somaIndecisos += p.totais.indecisos;
+  ordenadas.forEach((p) => {
+    // Fator de recência: pesquisas mais recentes recebem peso significativamente maior
+    const pollTime = new Date(p.divulgacao).getTime();
+    const diffDays = Math.max(0, (refTime - pollTime) / (1000 * 60 * 60 * 24));
+    const pesoRecencia = Math.max(0.4, 1 / (1 + diffDays * 0.35));
+    // Fator de amostra: amostras maiores têm peso marginalmente maior
+    const pesoAmostra = Math.sqrt(p.amostra / 2000);
+    const pesoFinal = pesoRecencia * pesoAmostra;
+
+    somaPesos += pesoFinal;
+    somaValidosFlavio += p.validos.flavio * pesoFinal;
+    somaValidosLula += p.validos.lula * pesoFinal;
+    somaTotaisFlavio += p.totais.flavio * pesoFinal;
+    somaTotaisLula += p.totais.lula * pesoFinal;
+    somaBn += p.totais.brancosNulos * pesoFinal;
+    somaIndecisos += p.totais.indecisos * pesoFinal;
   });
 
-  const n = pesquisas.length;
-  const validosFlavio = Number((somaValidosFlavio / n).toFixed(1));
-  const validosLula = Number((somaValidosLula / n).toFixed(1));
+  const validosFlavio = Number((somaValidosFlavio / somaPesos).toFixed(1));
+  const validosLula = Number((somaValidosLula / somaPesos).toFixed(1));
+
+  // Formata a data mais recente amigavelmente
+  const [ano, mes, dia] = maisRecente.divulgacao.split('-');
+  const meses = [
+    'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+    'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+  ];
+  const dataFormatada = `${Number(dia)} de ${meses[Number(mes) - 1]} de ${ano}`;
 
   return {
     validos: {
@@ -421,13 +628,14 @@ export function calcularMediaAgregada() {
       lula: validosLula,
     },
     totais: {
-      flavio: Number((somaTotaisFlavio / n).toFixed(1)),
-      lula: Number((somaTotaisLula / n).toFixed(1)),
-      brancosNulos: Number((somaBn / n).toFixed(1)),
-      indecisos: Number((somaIndecisos / n).toFixed(1)),
+      flavio: Number((somaTotaisFlavio / somaPesos).toFixed(1)),
+      lula: Number((somaTotaisLula / somaPesos).toFixed(1)),
+      brancosNulos: Number((somaBn / somaPesos).toFixed(1)),
+      indecisos: Number((somaIndecisos / somaPesos).toFixed(1)),
     },
     vantagemFlavio: Number((validosFlavio - validosLula).toFixed(1)),
-    quantidadePesquisas: n,
-    atualizadoEm: '13 de outubro de 2026',
+    quantidadePesquisas: ordenadas.length,
+    atualizadoEm: dataFormatada,
+    maisRecente,
   };
 }

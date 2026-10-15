@@ -88,6 +88,68 @@ export function getCorCandidato(numero: number, sigla?: string): string {
   return '#64748b';
 }
 
+/** Números oficiais dos candidatos à Presidência da República em 2026 */
+export const NUMEROS_PRESIDENTE = [22, 13, 70, 14, 55, 30, 80, 16, 27, 21, 35, 29];
+
+/**
+ * Retorna a URL da foto oficial do candidato.
+ * Procura primeiro nas fotos estáticas do sistema local (/fotos/...) com fallback resiliente.
+ */
+export function getFotoCandidato(params: {
+  numero?: number;
+  sq?: string;
+  cargo?: 'pres' | 'gov' | 'sen';
+  uf?: string | null;
+  fotoUrl?: string;
+}): string {
+  if (params.fotoUrl) return params.fotoUrl;
+
+  const { numero, sq, cargo = 'pres', uf } = params;
+
+  // 1. Cargo Presidencial (ou sem cargo com número de presidente)
+  if (cargo === 'pres' || (!cargo && numero && NUMEROS_PRESIDENTE.includes(numero))) {
+    if (numero) return `/fotos/pres/${numero}.jpeg`;
+    if (sq) return `/fotos/pres/${sq}.jpeg`;
+    return sq ? `https://resultados.tse.jus.br/oficial/ele2026/6257/fotos/br/${sq}.jpeg` : '';
+  }
+
+  // 2. Cargo Estadual (Governador ou Senador)
+  const ufLower = (uf || '').toLowerCase();
+  if (ufLower) {
+    if (cargo && numero) {
+      return `/fotos/${ufLower}/${cargo}-${numero}.jpeg`;
+    }
+    if (sq) {
+      return `/fotos/${ufLower}/${sq}.jpeg`;
+    }
+    if (numero) {
+      return `/fotos/${ufLower}/gov-${numero}.jpeg`;
+    }
+  }
+
+  // Fallback geral
+  if (numero) return `/fotos/pres/${numero}.jpeg`;
+  return '';
+}
+
+/**
+ * Retorna a URL remota oficial do TSE como fallback para caso o arquivo local não responda
+ */
+export function getFotoCandidatoFallback(params: {
+  sq?: string;
+  cargo?: 'pres' | 'gov' | 'sen';
+  uf?: string | null;
+}): string {
+  const { sq, cargo = 'pres', uf } = params;
+  if (!sq) return '';
+  if (cargo === 'pres') {
+    return `https://resultados.tse.jus.br/oficial/ele2026/6257/fotos/br/${sq}.jpeg`;
+  }
+  const ufLower = (uf || 'sp').toLowerCase();
+  return `https://resultados.tse.jus.br/oficial/ele2026/6259/fotos/${ufLower}/${sq}.jpeg`;
+}
+
+
 // Cores legadas para compatibilidade
 export const CORES_PARTIDOS: Record<number, { cor: string; bgSoft: string; textDark: string; nome: string; sigla: string }> = {
   22: { cor: '#1e40af', bgSoft: '#dbeafe', textDark: '#1e3a8a', nome: 'PL', sigla: 'PL' },
@@ -263,14 +325,23 @@ export function getVencedorUf(
     const pctSegundo = totalValidos > 0 ? ((votos[vencedorIdx === 0 ? 1 : 0] || 0) / totalValidos) * 100 : 0;
     const margem = pctVencedor - pctSegundo;
 
+    const vencedorComFoto = {
+      ...vencedor,
+      fotoUrl: getFotoCandidato({ numero: vencedor.n, sq: vencedor.sq, cargo: 'pres' }),
+    };
+    const segundoComFoto = segundo ? {
+      ...segundo,
+      fotoUrl: getFotoCandidato({ numero: segundo.n, sq: segundo.sq, cargo: 'pres' }),
+    } : null;
+
     return {
       uf: ufLower,
       cargo: 'pres' as const,
       nome: NOMES_UFS[ufLower] || uf.toUpperCase(),
-      vencedor,
+      vencedor: vencedorComFoto,
       votosVencedor: maxVotos,
       pctVencedor,
-      segundo,
+      segundo: segundoComFoto,
       pctSegundo,
       margem,
       totais: ufInfo.tot,
@@ -278,6 +349,7 @@ export function getVencedorUf(
       municipiosCount: ufInfo.mun || 0,
       candidatos: cands.map((c, idx) => ({
         ...c,
+        fotoUrl: getFotoCandidato({ numero: c.n, sq: c.sq, cargo: 'pres' }),
         votosUf: votos[idx] || 0,
         pctUf: totalValidos > 0 ? ((votos[idx] || 0) / totalValidos) * 100 : 0,
       })),
@@ -301,10 +373,16 @@ export function getVencedorUf(
       uf: ufLower,
       cargo: 'gov' as const,
       nome: NOMES_UFS[ufLower] || uf.toUpperCase(),
-      vencedor,
+      vencedor: {
+        ...vencedor,
+        fotoUrl: getFotoCandidato({ numero: vencedor.n, sq: vencedor.sq, cargo: 'gov', uf: ufLower }),
+      },
       votosVencedor: vencedor.v,
       pctVencedor,
-      segundo,
+      segundo: segundo ? {
+        ...segundo,
+        fotoUrl: getFotoCandidato({ numero: segundo.n, sq: segundo.sq, cargo: 'gov', uf: ufLower }),
+      } : null,
       pctSegundo,
       margem,
       totais: govInfo.tot,
@@ -312,6 +390,7 @@ export function getVencedorUf(
       municipiosCount: resumo.pres.ufs[ufLower]?.mun || 0,
       candidatos: cands.map((c) => ({
         ...c,
+        fotoUrl: getFotoCandidato({ numero: c.n, sq: c.sq, cargo: 'gov', uf: ufLower }),
         votosUf: c.v,
         pctUf: c.p,
       })),
@@ -335,10 +414,16 @@ export function getVencedorUf(
       uf: ufLower,
       cargo: 'sen' as const,
       nome: NOMES_UFS[ufLower] || uf.toUpperCase(),
-      vencedor,
+      vencedor: {
+        ...vencedor,
+        fotoUrl: getFotoCandidato({ numero: vencedor.n, sq: vencedor.sq, cargo: 'sen', uf: ufLower }),
+      },
       votosVencedor: vencedor.v,
       pctVencedor,
-      segundo,
+      segundo: segundo ? {
+        ...segundo,
+        fotoUrl: getFotoCandidato({ numero: segundo.n, sq: segundo.sq, cargo: 'sen', uf: ufLower }),
+      } : null,
       pctSegundo,
       margem,
       totais: senInfo.tot,
@@ -346,6 +431,7 @@ export function getVencedorUf(
       municipiosCount: resumo.pres.ufs[ufLower]?.mun || 0,
       candidatos: cands.map((c) => ({
         ...c,
+        fotoUrl: getFotoCandidato({ numero: c.n, sq: c.sq, cargo: 'sen', uf: ufLower }),
         votosUf: c.v,
         pctUf: c.p,
       })),

@@ -1,1 +1,92 @@
 @import "tailwindcss";
+
+/* ==========================================================================
+   Temas para Eleições 2026: Tema Claro e Tema Escuro
+   Total imparcialidade política, alto contraste e conforto visual
+   ========================================================================== */
+
+/* 1. Tema Claro (Padrão) */
+:root,
+[data-theme="claro"] {
+  --theme-bg: #f8fafc;
+  --theme-surface: #ffffff;
+  --theme-border: #e2e8f0;
+  --theme-text-main: #0f172a;
+  --theme-text-muted: #64748b;
+  --theme-civic-accent: #059669;
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--theme-bg);
+  color: var(--theme-text-main);
+}
+
+/* 2. Tema Escuro */
+[data-theme="escuro"],
+.dark {
+  --theme-bg: #090d16;
+  --theme-surface: #0f172a;
+  --theme-border: #1e293b;
+  --theme-text-main: #f8fafc;
+  --theme-text-muted: #94a3b8;
+  --theme-civic-accent: #10b981;
+  color-scheme: dark;
+}
+
+[data-theme="escuro"] body,
+.dark body {
+  background-color: #090d16;
+  color: #f8fafc;
+}
+
+[data-theme="escuro"] .bg-white,
+.dark .bg-white {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="escuro"] .bg-slate-50,
+.dark .bg-slate-50 {
+  background-color: #090d16 !important;
+}
+
+[data-theme="escuro"] .border-slate-200,
+.dark .border-slate-200 {
+  border-color: #1e293b !important;
+}
+
+[data-theme="escuro"] .border-slate-100,
+.dark .border-slate-100 {
+  border-color: #1e293b !important;
+}
+
+[data-theme="escuro"] .text-slate-900,
+.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+[data-theme="escuro"] .text-slate-800,
+.dark .text-slate-800 {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="escuro"] .text-slate-700,
+.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="escuro"] .text-slate-600,
+.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+[data-theme="escuro"] .text-slate-500,
+.dark .text-slate-500 {
+  color: #64748b !important;
+}
+
+[data-theme="escuro"] .bg-slate-100,
+.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}

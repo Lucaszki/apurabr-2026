@@ -33,6 +33,7 @@ export interface CandidatoResumo {
   e: boolean;
   st: string;
   nasc?: string;
+  fotoUrl?: string;
 }
 
 export interface CargoResumo {

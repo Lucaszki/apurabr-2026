@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { ResumoNacionalBrasil } from '../../types/dataset';
 import { NOMES_UFS, CORES_PARTIDOS } from '../../services/electionDatasetService';
 import { formatters } from '../../services/electionApi';
+import { CandidatePhoto } from '../CandidatePhoto';
 import {
   Building2,
   Trophy,
@@ -156,22 +157,40 @@ export const StatesOverview: React.FC<StatesOverviewProps> = ({
 
               {/* Detalhe do Governador Líder / Eleito */}
               {est.lider && (
-                <div className="mt-4 rounded-xl bg-slate-50 border border-slate-100 p-3 space-y-2">
+                <div className="mt-4 rounded-xl bg-slate-50 border border-slate-100 p-3 space-y-2.5">
                   <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900">{est.lider.nmu}</span>
-                      <span className="rounded bg-slate-200 px-1.5 py-0.2 text-[10px] font-bold text-slate-700">
-                        {est.lider.sg}
-                      </span>
+                    <div className="flex items-center gap-2.5">
+                      <CandidatePhoto
+                        nome={est.lider.nmu}
+                        numero={est.lider.n}
+                        sq={est.lider.sq}
+                        cargo="gov"
+                        uf={est.uf}
+                        partido={est.lider.sg}
+                        size="sm"
+                        aspectRatio="portrait"
+                        showNumberBadge
+                      />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-slate-900 leading-tight">{est.lider.nmu}</span>
+                          <span className="rounded bg-slate-200 px-1.5 py-0.2 text-[10px] font-bold text-slate-700">
+                            {est.lider.sg}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-slate-500 font-medium">
+                          {formatters.number(est.lider.v)} votos
+                        </span>
+                      </div>
                     </div>
-                    <span className="font-extrabold text-blue-700 tabular-nums">
+                    <span className="font-extrabold text-slate-900 tabular-nums text-sm">
                       {formatters.percent(est.lider.p)}
                     </span>
                   </div>
 
                   <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-blue-600 rounded-full"
+                      className="h-full bg-slate-800 rounded-full"
                       style={{ width: `${est.lider.p}%` }}
                     />
                   </div>
@@ -180,19 +199,37 @@ export const StatesOverview: React.FC<StatesOverviewProps> = ({
                   {est.is2T && est.segundo && (
                     <div className="pt-2 border-t border-slate-200/80">
                       <div className="flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-800">{est.segundo.nmu}</span>
-                          <span className="rounded bg-slate-200 px-1.5 py-0.2 text-[10px] font-bold text-slate-700">
-                            {est.segundo.sg}
-                          </span>
+                        <div className="flex items-center gap-2.5">
+                          <CandidatePhoto
+                            nome={est.segundo.nmu}
+                            numero={est.segundo.n}
+                            sq={est.segundo.sq}
+                            cargo="gov"
+                            uf={est.uf}
+                            partido={est.segundo.sg}
+                            size="xs"
+                            aspectRatio="portrait"
+                            showNumberBadge
+                          />
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-slate-800 leading-tight">{est.segundo.nmu}</span>
+                              <span className="rounded bg-slate-200 px-1.5 py-0.2 text-[10px] font-bold text-slate-700">
+                                {est.segundo.sg}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-slate-500 font-medium">
+                              {formatters.number(est.segundo.v)} votos
+                            </span>
+                          </div>
                         </div>
-                        <span className="font-extrabold text-indigo-700 tabular-nums">
+                        <span className="font-extrabold text-slate-700 tabular-nums">
                           {formatters.percent(est.segundo.p)}
                         </span>
                       </div>
-                      <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden mt-1">
+                      <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden mt-1.5">
                         <div
-                          className="h-full bg-indigo-600 rounded-full"
+                          className="h-full bg-slate-500 rounded-full"
                           style={{ width: `${est.segundo.p}%` }}
                         />
                       </div>
@@ -206,7 +243,7 @@ export const StatesOverview: React.FC<StatesOverviewProps> = ({
             <button
               type="button"
               onClick={() => onSelectUf(est.uf)}
-              className="mt-4 w-full flex items-center justify-center gap-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 py-2 text-xs font-bold transition-colors"
+              className="mt-4 w-full flex items-center justify-center gap-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 py-2 text-xs font-bold transition-colors cursor-pointer"
             >
               <span>Abrir no mapa detalhado</span>
               <ChevronRight className="h-3.5 w-3.5" />

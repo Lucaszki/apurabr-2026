@@ -6,8 +6,13 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { CANDIDATOS_1T_TRANSFERENCIA } from '../../data/pesquisas2026';
+import {
+  CANDIDATOS_1T_TRANSFERENCIA,
+  getPesquisaMaisRecente,
+  calcularMediaAgregada,
+} from '../../data/pesquisas2026';
 import { formatters } from '../../services/electionApi';
+import { CandidatePhoto } from '../CandidatePhoto';
 import {
   Calculator,
   RotateCcw,
@@ -20,24 +25,34 @@ import {
   Sliders,
   AlertCircle,
   HelpCircle,
+  Radio,
 } from 'lucide-react';
 
 export const RunoffSimulator: React.FC = () => {
+  // Dados da pesquisa mais recente registrada e agregador dinâmico
+  const pesquisaMaisRecente = useMemo(() => getPesquisaMaisRecente(), []);
+  const mediaAgregada = useMemo(() => calcularMediaAgregada(), []);
+
   // Dados oficiais do 1º turno (TSE 2026)
   const votosBaseFlavio = 56104503;
   const votosBaseLula = 53879538;
   const totalValidos1T = 119300788;
   const votosOutros1T = totalValidos1T - votosBaseFlavio - votosBaseLula; // 9.316.747 votos
 
+  // Cenário ativo atualmente
+  const [cenarioAtivo, setCenarioAtivo] = useState<
+    'pesquisas' | 'polarizacao' | 'virada' | 'conservador' | 'personalizado'
+  >('pesquisas');
+
   // Estado das transferências de voto (%)
   const [transferencias, setTransferencias] = useState<
     Record<number, { flavio: number; lula: number; brancoNulo: number }>
   >({
-    70: { flavio: 50, lula: 28, brancoNulo: 22 }, // Augusto Cury
-    14: { flavio: 68, lula: 12, brancoNulo: 20 }, // Renan Santos
-    55: { flavio: 72, lula: 16, brancoNulo: 12 }, // Ronaldo Caiado
-    30: { flavio: 82, lula: 8, brancoNulo: 10 },  // Romeu Zema
-    80: { flavio: 5, lula: 82, brancoNulo: 13 },  // Samara
+    70: { flavio: 52, lula: 28, brancoNulo: 20 }, // Augusto Cury
+    14: { flavio: 70, lula: 10, brancoNulo: 20 }, // Renan Santos
+    55: { flavio: 75, lula: 15, brancoNulo: 10 }, // Ronaldo Caiado
+    30: { flavio: 85, lula: 5, brancoNulo: 10 },  // Romeu Zema
+    80: { flavio: 5, lula: 85, brancoNulo: 10 },  // Samara
   });
 
   // Ajustes globais
@@ -47,6 +62,7 @@ export const RunoffSimulator: React.FC = () => {
 
   // Cenários pré-configurados
   const aplicarCenario = (tipo: 'pesquisas' | 'polarizacao' | 'virada' | 'conservador') => {
+    setCenarioAtivo(tipo);
     if (tipo === 'pesquisas') {
       setTransferencias({
         70: { flavio: 52, lula: 28, brancoNulo: 20 },
@@ -150,6 +166,7 @@ export const RunoffSimulator: React.FC = () => {
   }, [transferencias, variacaoAbstencao, swingSudeste, swingNordeste]);
 
   const updateTransferencia = (numero: number, campo: 'flavio' | 'lula', val: number) => {
+    setCenarioAtivo('personalizado');
     setTransferencias((prev) => {
       const atual = prev[numero] || { flavio: 50, lula: 30, brancoNulo: 20 };
       const novoFlavio = campo === 'flavio' ? val : Math.min(100 - val, atual.flavio);
@@ -165,14 +182,14 @@ export const RunoffSimulator: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* 1. Placar da Simulação e Veredito em Tempo Real */}
-      <section className="rounded-2xl border border-blue-300 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 p-6 text-white shadow-xl">
+      <section className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-zinc-950 p-6 text-white shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-800">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-500 text-white">
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-800 text-slate-200 border border-slate-700">
                 <Calculator className="h-3.5 w-3.5" />
               </span>
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Simulador Decisivo de Segundo Turno
               </span>
             </div>
@@ -189,33 +206,100 @@ export const RunoffSimulator: React.FC = () => {
             <button
               type="button"
               onClick={() => aplicarCenario('pesquisas')}
-              className="rounded-lg bg-blue-600/80 hover:bg-blue-600 px-3 py-1.5 text-xs font-bold transition-colors"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                cenarioAtivo === 'pesquisas'
+                  ? 'bg-white text-slate-950 shadow-sm font-extrabold ring-1 ring-white/60'
+                  : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
             >
-              Cenário Pesquisas
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Cenário Pesquisas (Ativo)
             </button>
             <button
               type="button"
               onClick={() => aplicarCenario('conservador')}
-              className="rounded-lg bg-slate-800 hover:bg-slate-700 px-3 py-1.5 text-xs font-bold transition-colors"
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                cenarioAtivo === 'conservador'
+                  ? 'bg-white text-slate-950 shadow-sm font-extrabold ring-1 ring-white/60'
+                  : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
             >
               Onda Direita
             </button>
             <button
               type="button"
               onClick={() => aplicarCenario('virada')}
-              className="rounded-lg bg-slate-800 hover:bg-slate-700 px-3 py-1.5 text-xs font-bold transition-colors"
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                cenarioAtivo === 'virada'
+                  ? 'bg-white text-slate-950 shadow-sm font-extrabold ring-1 ring-white/60'
+                  : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
             >
               Virada Lula
             </button>
             <button
               type="button"
+              onClick={() => aplicarCenario('polarizacao')}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                cenarioAtivo === 'polarizacao'
+                  ? 'bg-white text-slate-950 shadow-sm font-extrabold ring-1 ring-white/60'
+                  : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+            >
+              Polarização
+            </button>
+            <button
+              type="button"
               onClick={redefinir}
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-              title="Redefinir simulação"
+              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+              title="Redefinir simulação para pesquisas ativas"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
           </div>
+        </div>
+
+        {/* Banner de Sincronização Ativa com a Pesquisa Mais Recente */}
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl bg-slate-900/90 border border-slate-800 px-3.5 py-2 text-xs">
+          {cenarioAtivo === 'pesquisas' ? (
+            <div className="flex items-center gap-2 text-slate-200">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>
+                <strong className="text-emerald-400 font-bold">Radar Ativo:</strong> Calibrado com a pesquisa mais recente registrada —{' '}
+                <strong className="text-white">{pesquisaMaisRecente.instituto}</strong> ({pesquisaMaisRecente.registroTse} · {pesquisaMaisRecente.divulgacao.split('-').reverse().join('/')}) e Agregador Ponderado ({mediaAgregada?.validos.flavio}% a {mediaAgregada?.validos.lula}%).
+              </span>
+            </div>
+          ) : cenarioAtivo === 'personalizado' ? (
+            <div className="flex items-center justify-between w-full gap-2 text-amber-200">
+              <div className="flex items-center gap-2">
+                <Sliders className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                <span>Cenário Personalizado: Parâmetros ajustados manualmente.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => aplicarCenario('pesquisas')}
+                className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 underline cursor-pointer shrink-0"
+              >
+                Reativar pesquisa mais recente
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-slate-300">
+              <Sparkles className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              <span>
+                Cenário Hipotético Ativo: <strong className="text-white capitalize">{cenarioAtivo}</strong>.
+              </span>
+            </div>
+          )}
+
+          {cenarioAtivo === 'pesquisas' && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 shrink-0">
+              Amostra: {formatters.number(pesquisaMaisRecente.amostra)} eleitores (±{pesquisaMaisRecente.margem}%)
+            </span>
+          )}
         </div>
 
         {/* Placar dos 2 Candidatos */}
@@ -229,10 +313,17 @@ export const RunoffSimulator: React.FC = () => {
             }`}
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white font-extrabold text-base shadow-sm">
-                  22
-                </span>
+              <div className="flex items-center gap-3.5">
+                <CandidatePhoto
+                  nome="Flávio Bolsonaro"
+                  numero={22}
+                  cargo="pres"
+                  corHex="#1e40af"
+                  partido="PL"
+                  size="sm"
+                  aspectRatio="portrait"
+                  showNumberBadge
+                />
                 <div>
                   <h3 className="text-base font-bold text-white">Flávio Bolsonaro</h3>
                   <span className="text-xs text-blue-400 font-semibold">Partido Liberal (PL)</span>
@@ -274,10 +365,17 @@ export const RunoffSimulator: React.FC = () => {
             }`}
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-600 text-white font-extrabold text-base shadow-sm">
-                  13
-                </span>
+              <div className="flex items-center gap-3.5">
+                <CandidatePhoto
+                  nome="Lula"
+                  numero={13}
+                  cargo="pres"
+                  corHex="#dc2626"
+                  partido="PT"
+                  size="sm"
+                  aspectRatio="portrait"
+                  showNumberBadge
+                />
                 <div>
                   <h3 className="text-base font-bold text-white">Lula</h3>
                   <span className="text-xs text-red-400 font-semibold">
@@ -388,16 +486,27 @@ export const RunoffSimulator: React.FC = () => {
                 className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900">
-                      {c.nome}{' '}
-                      <span className="text-xs font-semibold text-slate-500">
-                        ({c.siglaPartido})
+                  <div className="flex items-center gap-3">
+                    <CandidatePhoto
+                      nome={c.nome}
+                      numero={c.numero}
+                      cargo="pres"
+                      partido={c.siglaPartido}
+                      size="sm"
+                      aspectRatio="portrait"
+                      showNumberBadge
+                    />
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">
+                        {c.nome}{' '}
+                        <span className="text-xs font-semibold text-slate-500">
+                          ({c.siglaPartido})
+                        </span>
+                      </h4>
+                      <span className="text-[11px] text-slate-500">
+                        {formatters.number(c.votos1T)} votos ({formatters.percent(c.pctValidos1T)}) no 1T
                       </span>
-                    </h4>
-                    <span className="text-[11px] text-slate-500">
-                      {formatters.number(c.votos1T)} votos ({formatters.percent(c.pctValidos1T)}) no 1T
-                    </span>
+                    </div>
                   </div>
 
                   <span className="rounded bg-slate-200 px-2 py-0.5 text-xs font-mono font-bold text-slate-800">
@@ -468,7 +577,10 @@ export const RunoffSimulator: React.FC = () => {
               max="5"
               step="0.5"
               value={swingSudeste}
-              onChange={(e) => setSwingSudeste(Number(e.target.value))}
+              onChange={(e) => {
+                setCenarioAtivo('personalizado');
+                setSwingSudeste(Number(e.target.value));
+              }}
               className="w-full accent-blue-600 h-1.5 bg-slate-100 rounded-lg cursor-pointer"
             />
             <span className="text-[10px] text-slate-400 block">
@@ -490,7 +602,10 @@ export const RunoffSimulator: React.FC = () => {
               max="5"
               step="0.5"
               value={swingNordeste}
-              onChange={(e) => setSwingNordeste(Number(e.target.value))}
+              onChange={(e) => {
+                setCenarioAtivo('personalizado');
+                setSwingNordeste(Number(e.target.value));
+              }}
               className="w-full accent-red-600 h-1.5 bg-slate-100 rounded-lg cursor-pointer"
             />
             <span className="text-[10px] text-slate-400 block">
@@ -512,7 +627,10 @@ export const RunoffSimulator: React.FC = () => {
               max="3"
               step="0.5"
               value={variacaoAbstencao}
-              onChange={(e) => setVariacaoAbstencao(Number(e.target.value))}
+              onChange={(e) => {
+                setCenarioAtivo('personalizado');
+                setVariacaoAbstencao(Number(e.target.value));
+              }}
               className="w-full accent-slate-800 h-1.5 bg-slate-100 rounded-lg cursor-pointer"
             />
             <span className="text-[10px] text-slate-400 block">
