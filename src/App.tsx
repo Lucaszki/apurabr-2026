@@ -47,14 +47,59 @@ import {
   Layers,
 } from 'lucide-react';
 
+const getInitialAba = (): 'mapa' | 'pesquisas' | 'simulador' | 'estados' => {
+  if (typeof window !== 'undefined') {
+    const hash = window.location.hash.replace('#', '').toLowerCase();
+    if (['mapa', 'pesquisas', 'simulador', 'estados'].includes(hash)) {
+      return hash as 'mapa' | 'pesquisas' | 'simulador' | 'estados';
+    }
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab')?.toLowerCase();
+    if (tab && ['mapa', 'pesquisas', 'simulador', 'estados'].includes(tab)) {
+      return tab as 'mapa' | 'pesquisas' | 'simulador' | 'estados';
+    }
+  }
+  return 'mapa';
+};
+
 export default function App() {
   // Controle de Abas
   const [abaAtiva, setAbaAtiva] = useState<
     'mapa' | 'pesquisas' | 'simulador' | 'estados'
-  >('mapa');
+  >(getInitialAba);
 
   // Turno Ativo (1 = Consolidado Oficial TSE, 2 = Pesquisas & Apuração Decisiva)
-  const [turnoAtivo, setTurnoAtivo] = useState<number>(1);
+  const [turnoAtivo, setTurnoAtivo] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'pesquisas' || hash === 'simulador') return 2;
+    }
+    return 1;
+  });
+
+  const handleMudarAba = (novaAba: 'mapa' | 'pesquisas' | 'simulador' | 'estados') => {
+    setAbaAtiva(novaAba);
+    if (novaAba === 'pesquisas' || novaAba === 'simulador') {
+      setTurnoAtivo(2);
+    }
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `#${novaAba}`);
+    }
+  };
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (['mapa', 'pesquisas', 'simulador', 'estados'].includes(hash)) {
+        setAbaAtiva(hash as 'mapa' | 'pesquisas' | 'simulador' | 'estados');
+        if (hash === 'pesquisas' || hash === 'simulador') {
+          setTurnoAtivo(2);
+        }
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
 
   // Cargo selecionado
   const [cargoAtivo, setCargoAtivo] = useState<'pres' | 'gov' | 'sen'>('pres');
@@ -118,7 +163,7 @@ export default function App() {
   const handleSelectMunicipioByIbge = useCallback(
     async (ibge: number, ufSigla: string, nomeMun: string) => {
       setSelectedUf(ufSigla.toLowerCase());
-      setAbaAtiva('mapa');
+      handleMudarAba('mapa');
 
       try {
         const dadosUf = await carregarUfData(ufSigla.toLowerCase(), turnoAtivo);
@@ -337,6 +382,11 @@ export default function App() {
           setTurnoAtivo(t);
           setSelectedMunicipio(null);
           setSelectedMesoId(null);
+          if (t === 2 && abaAtiva === 'mapa') {
+            handleMudarAba('pesquisas');
+          } else if (t === 1 && abaAtiva === 'pesquisas') {
+            handleMudarAba('mapa');
+          }
         }}
       />
 
@@ -348,7 +398,7 @@ export default function App() {
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
-                onClick={() => setAbaAtiva('mapa')}
+                onClick={() => handleMudarAba('mapa')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'mapa'
                     ? 'bg-slate-900 text-white shadow-xs'
@@ -361,7 +411,7 @@ export default function App() {
 
               <button
                 type="button"
-                onClick={() => setAbaAtiva('pesquisas')}
+                onClick={() => handleMudarAba('pesquisas')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'pesquisas'
                     ? 'bg-slate-900 text-white shadow-xs'
@@ -386,7 +436,7 @@ export default function App() {
 
               <button
                 type="button"
-                onClick={() => setAbaAtiva('simulador')}
+                onClick={() => handleMudarAba('simulador')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'simulador'
                     ? 'bg-slate-900 text-white shadow-xs'
@@ -399,7 +449,7 @@ export default function App() {
 
               <button
                 type="button"
-                onClick={() => setAbaAtiva('estados')}
+                onClick={() => handleMudarAba('estados')}
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   abaAtiva === 'estados'
                     ? 'bg-slate-900 text-white shadow-xs'
@@ -475,6 +525,72 @@ export default function App() {
         {/* ABA 1: MAPA INTERATIVO DO BRASIL E DETALHES GEOGRÁFICOS */}
         {abaAtiva === 'mapa' && (
           <div className="space-y-4 sm:space-y-6">
+            {/* Aviso Dinâmico / Acesso Rápido às Pesquisas de 2º Turno */}
+            {turnoAtivo === 1 ? (
+              <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white p-3.5 sm:p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white shrink-0 shadow-xs">
+                    <TrendingUp className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-950">
+                        2º Turno em 25/10/2026: Pesquisas e Simulação Ativas
+                      </span>
+                      <span className="rounded-full bg-emerald-100 border border-emerald-300 px-2 py-0.2 text-[10px] font-bold text-emerald-800">
+                        Atualizado
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-emerald-800/80 leading-relaxed mt-0.5">
+                      Você está visualizando o resultado consolidado do 1º Turno. Acompanhe a média agregada e os números mais recentes dos institutos registrados no TSE.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTurnoAtivo(2);
+                    handleMudarAba('pesquisas');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer self-start sm:self-auto"
+                >
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  <span>Ver Pesquisas (2º Turno)</span>
+                  <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-r from-blue-50 via-sky-50/50 to-white p-3.5 sm:p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white shrink-0 shadow-xs">
+                    <Calendar className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-blue-950">
+                        Apuração Oficial do 2º Turno Começa em 25/10/2026
+                      </span>
+                      <span className="rounded-full bg-blue-100 border border-blue-300 px-2 py-0.2 text-[10px] font-bold text-blue-800">
+                        Aguardando Urnas
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-blue-800/80 leading-relaxed mt-0.5">
+                      A totalização oficial do TSE transmitirá os dados das urnas no domingo às 17h. Até lá, consulte as pesquisas de intenção de voto consolidadas.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleMudarAba('pesquisas')}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer self-start sm:self-auto"
+                >
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  <span>Abrir Painel de Pesquisas</span>
+                  <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+
             {/* Banner explicativo contextual com Seletor de Cargo integrado */}
             <div className="rounded-2xl border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
               <div className="flex items-center gap-3">
@@ -601,7 +717,7 @@ export default function App() {
                     </p>
                     <button
                       type="button"
-                      onClick={() => setAbaAtiva('pesquisas')}
+                      onClick={() => handleMudarAba('pesquisas')}
                       className="inline-flex items-center gap-1 font-bold text-slate-900 hover:underline cursor-pointer"
                     >
                       <span>Abrir comparativo de institutos</span>
@@ -688,7 +804,7 @@ export default function App() {
             resumoNacional={resumoNacional}
             onSelectUf={(uf) => {
               setSelectedUf(uf);
-              setAbaAtiva('mapa');
+              handleMudarAba('mapa');
             }}
           />
         )}
@@ -719,7 +835,7 @@ export default function App() {
         onClose={() => setIsSearchOpen(false)}
         onSelectUf={(uf) => {
           setSelectedUf(uf);
-          setAbaAtiva('mapa');
+          handleMudarAba('mapa');
         }}
         onSelectMunicipioByIbge={handleSelectMunicipioByIbge}
       />
