@@ -6,11 +6,8 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import {
-  CANDIDATOS_1T_TRANSFERENCIA,
-  getPesquisaMaisRecente,
-  calcularMediaAgregada,
-} from '../../data/pesquisas2026';
+import { CANDIDATOS_1T_TRANSFERENCIA } from '../../data/pesquisas2026';
+import { usePesquisasData } from '../../hooks/usePesquisasData';
 import { formatters } from '../../services/electionApi';
 import { CandidatePhoto } from '../CandidatePhoto';
 import {
@@ -29,9 +26,8 @@ import {
 } from 'lucide-react';
 
 export const RunoffSimulator: React.FC = () => {
-  // Dados da pesquisa mais recente registrada e agregador dinâmico
-  const pesquisaMaisRecente = useMemo(() => getPesquisaMaisRecente(), []);
-  const mediaAgregada = useMemo(() => calcularMediaAgregada(), []);
+  // Dados dinâmicos sincronizados com a pesquisa mais recente registrada e agregador
+  const { pesquisaMaisRecente, mediaAgregada } = usePesquisasData();
 
   // Dados oficiais do 1º turno (TSE 2026)
   const votosBaseFlavio = 56104503;
@@ -269,7 +265,7 @@ export const RunoffSimulator: React.FC = () => {
               </span>
               <span>
                 <strong className="text-emerald-400 font-bold">Radar Ativo:</strong> Calibrado com a pesquisa mais recente registrada —{' '}
-                <strong className="text-white">{pesquisaMaisRecente.instituto}</strong> ({pesquisaMaisRecente.registroTse} · {pesquisaMaisRecente.divulgacao.split('-').reverse().join('/')}) e Agregador Ponderado ({mediaAgregada?.validos.flavio}% a {mediaAgregada?.validos.lula}%).
+                <strong className="text-white">{pesquisaMaisRecente?.instituto}</strong> ({pesquisaMaisRecente?.registroTse} · {pesquisaMaisRecente?.divulgacao ? pesquisaMaisRecente.divulgacao.split('-').reverse().join('/') : ''}) e Agregador Ponderado ({mediaAgregada?.validos.flavio}% a {mediaAgregada?.validos.lula}%).
               </span>
             </div>
           ) : cenarioAtivo === 'personalizado' ? (
@@ -295,7 +291,7 @@ export const RunoffSimulator: React.FC = () => {
             </div>
           )}
 
-          {cenarioAtivo === 'pesquisas' && (
+          {cenarioAtivo === 'pesquisas' && pesquisaMaisRecente && (
             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 shrink-0">
               Amostra: {formatters.number(pesquisaMaisRecente.amostra)} eleitores (±{pesquisaMaisRecente.margem}%)
             </span>
